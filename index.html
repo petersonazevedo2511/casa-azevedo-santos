@@ -102,6 +102,19 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
 .profile-tab-panel .empty-note{padding:10px;border-left:2px solid #9c7937;background:#9c79370b}
 </style>
 
+
+<style id="azsResponsiveProfileFix">
+@media(max-width:760px){
+ .folio{width:min(94vw,94vw);max-height:92vh;overflow:auto;padding:18px!important}
+ .archive-profile{grid-template-columns:1fr!important;gap:14px!important}
+ .archive-fields{grid-template-columns:1fr!important}
+ .archive-tabs{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
+ .archive-tabs .profile-tab{width:100%;min-height:42px}
+ .profile-tab-panel{overflow-wrap:anywhere}
+}
+@media(max-width:390px){.archive-tabs{grid-template-columns:1fr!important}}
+</style>
+
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO SANTOS</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a></div></div></nav>
@@ -357,7 +370,20 @@ const profiles={
  solange:{birth:'Não registrado',death:'—',parents:'Não registrado',spouse:'Jair José',children:'Ketlin Lourenço de Melo Azevedo',branch:'Família de Ketlin',bio:'Aposentada, trabalhou como costureira. Lembrada por superação, sobrevivência, trabalho e fé.'}
 }
 document.querySelectorAll('.royal-person').forEach(el=>el.addEventListener('click',()=>{
- const p=profiles[el.id]||{}, name=el.dataset.name; modal.dataset.personId=el.id;
+ const name=el.dataset.name;
+ const base=profiles[el.id]||{};
+ const live=(window.getAZSPerson?window.getAZSPerson(el.id,name):null)||{};
+ const p={
+   ...base,
+   birth:live.birth||base.birth,
+   death:(live.status&&/falec/i.test(live.status))?'Falecido(a)':(base.death||'—'),
+   parents:[live.father,live.mother].filter(Boolean).join(' · ')||base.parents,
+   spouse:live.spouse||base.spouse,
+   children:live.children||base.children,
+   branch:live.branch||base.branch,
+   bio:live.bio||base.bio
+ };
+ modal.dataset.personId=el.id;
  document.getElementById('mname').textContent=name;
  document.getElementById('fullname').textContent=name;
  document.getElementById('mrole').textContent=el.dataset.role||'Membro da família';
@@ -531,7 +557,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElement
  ];
  let people;
  try{people=JSON.parse(localStorage.getItem(STORE))||seed}catch(e){people=seed}
- const save=()=>localStorage.setItem(STORE,JSON.stringify(people));
+ window.AZS_STORE_KEY=STORE;
+ window.azsPeople=people;
+ window.getAZSPerson=function(id,name){
+   const live=window.azsPeople||[];
+   return live.find(x=>x.id===id)||live.find(x=>x.name===name)||null;
+ };
+ const save=()=>{localStorage.setItem(STORE,JSON.stringify(people));window.azsPeople=people;document.dispatchEvent(new CustomEvent('azs:people-updated'));};
  const $=id=>document.getElementById(id);
  const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
  function list(){
@@ -564,7 +596,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElement
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-casa-azevedo-santos.json';a.click();URL.revokeObjectURL(a.href);
  };
  $('azsImport').onchange=async e=>{
-  try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.people))throw 0;people=data.people;save();list();refreshLineage();alert('Backup importado.')}catch(_){alert('Arquivo de backup inválido.')}
+  try{const data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.people))throw 0;people=data.people;window.azsPeople=people;save();list();refreshLineage();alert('Backup importado.')}catch(_){alert('Arquivo de backup inválido.')}
  };
  function refreshLineage(){
   const opts=people.slice().sort((a,b)=>a.name.localeCompare(b.name,'pt-BR')).map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('');
@@ -708,8 +740,10 @@ document.addEventListener('DOMContentLoaded',function(){
  document.querySelectorAll('.profile-tab').forEach(btn=>{
    btn.addEventListener('click',()=>{
      const id=document.getElementById('modal')?.dataset.personId||'';
-     const p=(typeof profiles!=='undefined'&&profiles[id])?profiles[id]:{};
      const name=document.getElementById('fullname')?.textContent||'Membro da família';
+     const base=(typeof profiles!=='undefined'&&profiles[id])?profiles[id]:{};
+     const live=(window.getAZSPerson?window.getAZSPerson(id,name):null)||{};
+     const p={...base,...live,children:live.children||base.children,bio:live.bio||base.bio};
      document.querySelectorAll('.profile-tab').forEach(b=>b.classList.toggle('active',b===btn));
      const type=btn.dataset.profileTab;
      let body='';
@@ -728,6 +762,29 @@ document.addEventListener('DOMContentLoaded',function(){
      panel.classList.add('open');
    });
  });
+})();
+</script>
+
+
+<script id="azsLiveProfileSync">
+(function(){
+ function syncOpenProfile(){
+   const modal=document.getElementById('modal');
+   if(!modal||!modal.classList.contains('open')||!window.getAZSPerson)return;
+   const id=modal.dataset.personId||'';
+   const name=document.getElementById('fullname')?.textContent||'';
+   const p=window.getAZSPerson(id,name);
+   if(!p)return;
+   const parents=[p.father,p.mother].filter(Boolean).join(' · ')||'Não registrado';
+   const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v||'—'};
+   set('birth',p.birth||'Não registrado');
+   set('parents',parents);
+   set('spouse',p.spouse);
+   set('children',p.children);
+   set('branch',p.branch||'Casa Azevedo Santos');
+   set('mtext',p.bio||'Registro em formação.');
+ }
+ document.addEventListener('azs:people-updated',syncOpenProfile);
 })();
 </script>
 
