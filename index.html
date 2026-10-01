@@ -158,6 +158,55 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
 @media(max-width:520px){.azx-grid,.azx-map,.azx-memorial{grid-template-columns:1fr}}
 </style>
 
+<style id="azsPersonDescModeV4">
+body.azs-lineage-mode .royal-person,body.azs-lineage-mode .person{opacity:.13;filter:grayscale(.85);transition:.3s}
+body.azs-lineage-mode .royal-person.azs-lineage-hit,body.azs-lineage-mode .person.azs-lineage-hit{opacity:1;filter:none;outline:2px solid #d6ad58!important;box-shadow:0 0 28px #d6ad5866!important}
+#azsLineageBanner{display:none;position:sticky;top:64px;z-index:90;margin:10px auto;width:min(900px,92%);padding:10px 14px;background:#101713f2;border:1px solid #c9a052;color:#e9d6a7;text-align:center;font:11px sans-serif;letter-spacing:.08em}
+body.azs-lineage-mode #azsLineageBanner{display:block}
+#azsLineageBanner button{margin-left:12px;background:transparent;border:1px solid #c9a052;color:#e9d6a7;padding:5px 9px;cursor:pointer}
+</style>
+
+<style id="azsTreeProV5">
+#azsTreeViewport{position:relative;overflow:hidden;cursor:grab;touch-action:none;min-height:820px;border:1px solid #b48c4030}
+#azsTreeViewport.dragging{cursor:grabbing}
+#azsTreeStage{transform-origin:0 0;will-change:transform}
+.azs-tree-toolbar{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:12px 0 16px}
+.azs-tree-toolbar button{background:#111916;border:1px solid #b9924b;color:#ddc998;padding:8px 11px;font-size:10px;cursor:pointer}
+.azs-tree-toolbar button:hover{background:#1b251f}
+.azs-gen-badge{position:absolute;right:5px;top:5px;background:#0a100dd9;border:1px solid #b9924b77;color:#d7bd83;padding:2px 5px;font:8px sans-serif;letter-spacing:.06em;z-index:3}
+.azs-relation-hit{outline:2px solid #e0b75d!important;box-shadow:0 0 30px #d4a64d88!important;z-index:5}
+.azs-relation-muted{opacity:.18!important;filter:grayscale(.8)}
+.azs-lineage-mini{display:block;margin:7px auto 0;background:transparent;border:1px solid #a9874766;color:#cdb47e;padding:4px 7px;font-size:8px;cursor:pointer}
+</style>
+
+<style id="azsNetlifyBadgeOverlapFix">
+/* Mantém o acesso do arquivo longe do selo flutuante da Netlify */
+#privateBtn,#azsAdminOpen{
+  position:relative !important;
+  right:auto !important;
+  bottom:auto !important;
+  margin:18px auto 88px !important;
+  display:block !important;
+  width:max-content;
+  max-width:calc(100% - 32px);
+  z-index:20 !important;
+}
+@media(max-width:700px){
+  #privateBtn,#azsAdminOpen{
+    margin-bottom:105px !important;
+    max-width:calc(100% - 28px);
+  }
+}
+</style>
+
+<style id="azsUniversalAdminEditorStyle">
+#azsEditModeBar{display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9998;background:#0e1612f5;border:1px solid #b9924b;padding:8px 10px;box-shadow:0 8px 30px #0008;gap:7px;align-items:center}
+body.azs-is-admin #azsEditModeBar{display:flex}
+#azsEditModeBar button{background:#17211c;border:1px solid #9d7b3e;color:#ead6a6;padding:7px 10px;font-size:9px;cursor:pointer}
+body.azs-content-editing [data-azs-editable]{outline:1px dashed #cba45488;outline-offset:3px;cursor:text}
+body.azs-content-editing [data-azs-editable]:hover{outline:2px solid #d5aa52;background:#d5aa5208}
+#azsEditToast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);z-index:9999;background:#111a16;color:#ead6a6;border:1px solid #b9924b;padding:9px 13px;font:10px sans-serif;display:none}
+</style>
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a><a href="#linha-do-tempo">TEMPO</a><a href="#memorial">MEMORIAL</a></div></div></nav>
@@ -179,6 +228,7 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
 </div>
 </section>
 
+<div id="azsLineageBanner">LINHAGEM DESTACADA <button type="button" id="azsExitLineage">MOSTRAR ÁRVORE COMPLETA</button></div>
 <section class="wrap tree-section" id="linhagem">
 <div class="azx-tools" id="azxTreeTools">
 <button type="button" data-z="in">＋ ZOOM</button><button type="button" data-z="out">− ZOOM</button>
@@ -839,7 +889,7 @@ window.azsPortraits.ketlin="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2
        body='<h4>Crônica de '+esc(name)+'</h4><p>'+esc(p.bio||'Não há crônica biográfica registrada para esta pessoa.')+'</p>';
      }else{
        const children=p.children||'—';
-       body='<h4>Descendência de '+esc(name)+'</h4>'+(children==='—'||/não registrado/i.test(children)?'<div class="empty-note">Não há descendência registrada neste arquivo.</div>':'<p><b>Filhos registrados:</b> '+esc(children)+'</p>');
+       body='<h4>Descendência de '+esc(name)+'</h4>'+(children==='—'||/não registrado/i.test(children)?'<div class="empty-note">Não há descendência registrada neste arquivo.</div>':'<p><b>Filhos registrados:</b> '+esc(children)+'</p>')+'<div style="margin-top:14px"><button type="button" class="azs-btn" id="azsShowDescendants" data-person="'+esc(id)+'">DESTACAR LINHAGEM NA ÁRVORE</button></div>';
      }
      panel.innerHTML=body;
      panel.classList.add('open');
@@ -1101,4 +1151,209 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
 })();
 </script>
 
+<script id="azsPersonDescModeControllerV4">
+(function(){
+ function getPeople(){return window.azsPeople||[]}
+ function descendants(root,all,set){if(!root||set.has(root.id))return;set.add(root.id);all.filter(x=>x.father===root.name||x.mother===root.name).forEach(x=>descendants(x,all,set))}
+ function addSpouses(set,all){let changed=true;while(changed){changed=false;all.forEach(p=>{if(set.has(p.id)&&p.spouse){const s=all.find(x=>x.name===p.spouse);if(s&&!set.has(s.id)){set.add(s.id);changed=true}}})}}
+ window.azsHighlightDescendants=function(id){
+  const all=getPeople(),root=all.find(x=>x.id===id);if(!root)return;
+  const keep=new Set();descendants(root,all,keep);addSpouses(keep,all);
+  document.body.classList.add('azs-lineage-mode');
+  document.querySelectorAll('.royal-person[data-id],.person[data-id]').forEach(el=>el.classList.toggle('azs-lineage-hit',keep.has(el.dataset.id)));
+  document.getElementById('modal')?.classList.remove('open');
+  document.getElementById('linhagem')?.scrollIntoView({behavior:'smooth',block:'start'});
+ };
+ window.azsClearDescendants=function(){document.body.classList.remove('azs-lineage-mode');document.querySelectorAll('.azs-lineage-hit').forEach(x=>x.classList.remove('azs-lineage-hit'))};
+ document.addEventListener('click',e=>{const b=e.target.closest('#azsShowDescendants');if(b){e.preventDefault();window.azsHighlightDescendants(b.dataset.person)}});
+ document.getElementById('azsExitLineage')?.addEventListener('click',window.azsClearDescendants);
+})();
+</script>
+
+<script id="azsTreeProControllerV5">
+(function(){
+ let scale=1, tx=0, ty=0, dragging=false, sx=0, sy=0, ox=0, oy=0;
+ function people(){return window.azsPeople||[]}
+ function cards(){return [...document.querySelectorAll('.royal-person[data-id],.person[data-id]')]}
+ function setup(){
+   const tree=document.querySelector('.genealogy'); if(!tree||document.getElementById('azsTreeViewport'))return;
+   const viewport=document.createElement('div');viewport.id='azsTreeViewport';
+   const stage=document.createElement('div');stage.id='azsTreeStage';
+   tree.parentNode.insertBefore(viewport,tree);stage.appendChild(tree);viewport.appendChild(stage);
+   const bar=document.createElement('div');bar.className='azs-tree-toolbar';
+   bar.innerHTML='<button data-tree="zin">＋ ZOOM</button><button data-tree="zout">− ZOOM</button><button data-tree="reset">CENTRALIZAR ÁRVORE</button><button data-tree="relations">LIMPAR DESTAQUES</button>';
+   /* toolbar unified above; keep internal bar hidden */ bar.style.display='none';viewport.parentNode.insertBefore(bar,viewport);
+   function apply(){stage.style.transform='translate('+tx+'px,'+ty+'px) scale('+scale+')'}
+   bar.onclick=e=>{const a=e.target.dataset.tree;if(!a)return;if(a==='zin')scale=Math.min(1.8,scale+.12);if(a==='zout')scale=Math.max(.45,scale-.12);if(a==='reset'){scale=1;tx=0;ty=0}if(a==='relations')clearRelations();apply()};
+   viewport.addEventListener('wheel',e=>{e.preventDefault();scale=Math.max(.45,Math.min(1.8,scale+(e.deltaY<0?.08:-.08)));apply()},{passive:false});
+   viewport.addEventListener('pointerdown',e=>{dragging=true;sx=e.clientX;sy=e.clientY;ox=tx;oy=ty;viewport.classList.add('dragging');viewport.setPointerCapture(e.pointerId)});
+   viewport.addEventListener('pointermove',e=>{if(!dragging)return;tx=ox+(e.clientX-sx);ty=oy+(e.clientY-sy);apply()});
+   viewport.addEventListener('pointerup',()=>{dragging=false;viewport.classList.remove('dragging')});
+   viewport.addEventListener('pointercancel',()=>{dragging=false;viewport.classList.remove('dragging')});
+   window.azsCenterPerson=function(id){
+     const el=viewport.querySelector('[data-id="'+id+'"]');if(!el)return;
+     const vr=viewport.getBoundingClientRect(),er=el.getBoundingClientRect();
+     tx+=(vr.left+vr.width/2)-(er.left+er.width/2);ty+=(vr.top+vr.height/2)-(er.top+er.height/2);apply();
+   };
+   decorate();
+ }
+ function generationMap(){
+   const all=people(), byName=Object.fromEntries(all.map(p=>[p.name,p])), memo={};
+   function g(p,seen=new Set()){if(!p||seen.has(p.id))return 1;if(memo[p.id])return memo[p.id];seen.add(p.id);const ps=[byName[p.father],byName[p.mother]].filter(Boolean);return memo[p.id]=ps.length?1+Math.max(...ps.map(x=>g(x,new Set(seen)))):1}
+   all.forEach(p=>g(p));return memo;
+ }
+ function decorate(){
+   const gm=generationMap();
+   cards().forEach(el=>{
+     const id=el.dataset.id;if(!id)return;
+     let badge=el.querySelector('.azs-gen-badge');if(!badge){badge=document.createElement('span');badge.className='azs-gen-badge';el.appendChild(badge)}
+     badge.textContent=(gm[id]||1)+'ª GERAÇÃO';
+     if(!el.querySelector('.azs-lineage-mini')){
+       const b=document.createElement('button');b.className='azs-lineage-mini';b.type='button';b.textContent='VER LINHAGEM';
+       b.onclick=e=>{e.stopPropagation();showRelations(id);window.azsCenterPerson?.(id)};el.appendChild(b);
+     }
+   });
+ }
+ function clearRelations(){cards().forEach(el=>el.classList.remove('azs-relation-hit','azs-relation-muted'))}
+ function showRelations(id){
+   const all=people(), p=all.find(x=>x.id===id);if(!p)return;
+   const keep=new Set([id]), byName=Object.fromEntries(all.map(x=>[x.name,x]));
+   // parents + all known ancestors
+   function ancestors(x){[x.father,x.mother].forEach(n=>{const q=byName[n];if(q&&!keep.has(q.id)){keep.add(q.id);ancestors(q)}})}
+   ancestors(p);
+   // direct children
+   all.filter(x=>x.father===p.name||x.mother===p.name).forEach(x=>keep.add(x.id));
+   // spouse
+   const s=byName[p.spouse];if(s)keep.add(s.id);
+   cards().forEach(el=>{el.classList.toggle('azs-relation-hit',keep.has(el.dataset.id));el.classList.toggle('azs-relation-muted',!keep.has(el.dataset.id))});
+ }
+ document.addEventListener('click',e=>{
+   const card=e.target.closest('.royal-person[data-id],.person[data-id]');
+   if(card&&!e.target.closest('button')&&e.detail===2){showRelations(card.dataset.id);window.azsCenterPerson?.(card.dataset.id)}
+ });
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(setup,100));else setTimeout(setup,100);
+ document.addEventListener('azs:people-updated',()=>setTimeout(decorate,100));
+})();
+</script>
+
+<script id="azsTreeToolbarUnifiedFix">
+(function(){
+ function init(){
+  const viewport=document.getElementById('azsTreeViewport');
+  const stage=document.getElementById('azsTreeStage');
+  if(!viewport||!stage)return setTimeout(init,150);
+
+  let state={scale:1,x:0,y:0};
+  function read(){
+    const tr=stage.style.transform||'';
+    const m=tr.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)\s*scale\(([-\d.]+)\)/);
+    if(m)state={x:+m[1],y:+m[2],scale:+m[3]};
+  }
+  function apply(){stage.style.transform='translate('+state.x+'px,'+state.y+'px) scale('+state.scale+')'}
+  function zoom(delta){read();state.scale=Math.max(.45,Math.min(1.8,state.scale+delta));apply()}
+  function center(){state={scale:1,x:0,y:0};apply();viewport.scrollLeft=0;viewport.scrollTop=0}
+  window.azsTreeZoomIn=()=>zoom(.15);
+  window.azsTreeZoomOut=()=>zoom(-.15);
+  window.azsTreeReset=center;
+
+  // Bind the exact four visible buttons shown above the tree.
+  const legacy=document.getElementById('azxTreeTools');
+  if(legacy){
+    const zin=legacy.querySelector('[data-z="in"]');
+    const zout=legacy.querySelector('[data-z="out"]');
+    const reset=legacy.querySelector('[data-z="reset"]');
+    if(zin) zin.onclick=e=>{e.preventDefault();e.stopImmediatePropagation();window.azsTreeZoomIn()};
+    if(zout) zout.onclick=e=>{e.preventDefault();e.stopImmediatePropagation();window.azsTreeZoomOut()};
+    if(reset) reset.onclick=e=>{e.preventDefault();e.stopImmediatePropagation();window.azsTreeReset()};
+  }
+
+  // Make the Modo Descendência button meaningful: prompt the user to select a person
+  // and then use that person's descendant lineage.
+  const desc=document.getElementById('azxDescMode');
+  if(desc){
+    desc.onclick=function(e){
+      e.preventDefault();e.stopImmediatePropagation();
+      if(document.body.classList.contains('azs-lineage-mode')){
+        window.azsClearDescendants?.();
+        this.textContent='MODO DESCENDÊNCIA';
+        return;
+      }
+      this.textContent='SELECIONE UMA PESSOA NA ÁRVORE';
+      const once=function(ev){
+        const card=ev.target.closest('.royal-person[data-id],.person[data-id]');
+        if(!card)return;
+        document.removeEventListener('click',once,true);
+        window.azsHighlightDescendants?.(card.dataset.id);
+        desc.textContent='SAIR DO MODO DESCENDÊNCIA';
+      };
+      document.addEventListener('click',once,true);
+    };
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<div id="azsEditModeBar">
+<button type="button" id="azsToggleEdit">✎ EDITAR CONTEÚDO</button>
+<button type="button" id="azsSaveEdit">SALVAR ALTERAÇÕES</button>
+<button type="button" id="azsCancelEdit">CANCELAR</button>
+</div><div id="azsEditToast"></div>
+
+<script id="azsUniversalAdminEditor">
+(function(){
+ const KEY='azsPageContentV1';
+ let editing=false, snapshot={};
+ const excluded='#azsAdmin, #modal, #familyVault, #docPanel, #azsEditModeBar, script, style, nav';
+ function toast(t){const x=document.getElementById('azsEditToast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',1800)}
+ function candidates(){
+   const sels=['main h1','main h2','main h3','main h4','main p','main small','main .azx-kicker','main .azx-sub',
+   'section h1','section h2','section h3','section h4','section p','section small',
+   '.tile h3','.tile p','.azx-card b','.azx-card small','.azx-place b','.azx-place span',
+   'footer h1','footer h2','footer h3','footer p','footer small'];
+   const els=[...new Set(sels.flatMap(s=>[...document.querySelectorAll(s)]))];
+   return els.filter(el=>!el.closest(excluded)&&!el.querySelector('input,button,select,textarea')&&el.textContent.trim());
+ }
+ function tag(){
+   candidates().forEach((el,i)=>{if(!el.dataset.azsEditable)el.dataset.azsEditable='block-'+i});
+ }
+ function localData(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}
+ function apply(data){tag();document.querySelectorAll('[data-azs-editable]').forEach(el=>{const v=data[el.dataset.azsEditable];if(typeof v==='string')el.innerHTML=v})}
+ async function cloudLoad(){
+   let data=localData();apply(data);
+   try{
+    if(window.firebase&&firebase.firestore){
+      const snap=await firebase.firestore().collection('arquivo').doc('conteudo-site').get();
+      if(snap.exists&&snap.data().blocks){data=snap.data().blocks;localStorage.setItem(KEY,JSON.stringify(data));apply(data)}
+    }
+   }catch(e){}
+ }
+ function start(){
+   if(!document.body.classList.contains('azs-is-admin'))return;
+   tag();snapshot={};document.querySelectorAll('[data-azs-editable]').forEach(el=>{snapshot[el.dataset.azsEditable]=el.innerHTML;el.contentEditable='true'});
+   editing=true;document.body.classList.add('azs-content-editing');toast('Modo de edição ativado');
+ }
+ function stop(restore){
+   document.querySelectorAll('[data-azs-editable]').forEach(el=>{el.contentEditable='false';if(restore&&snapshot[el.dataset.azsEditable]!=null)el.innerHTML=snapshot[el.dataset.azsEditable]});
+   editing=false;document.body.classList.remove('azs-content-editing');
+ }
+ async function save(){
+   if(!editing)return;
+   const data={};document.querySelectorAll('[data-azs-editable]').forEach(el=>data[el.dataset.azsEditable]=el.innerHTML);
+   localStorage.setItem(KEY,JSON.stringify(data));
+   try{
+    if(window.firebase&&firebase.auth&&firebase.auth().currentUser&&firebase.firestore){
+      await firebase.firestore().collection('arquivo').doc('conteudo-site').set({blocks:data,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+      toast('Alterações salvas para toda a família');
+    }else toast('Alterações salvas neste dispositivo');
+   }catch(e){toast('Salvo localmente; nuvem indisponível')}
+   stop(false);
+ }
+ document.addEventListener('click',e=>{
+   if(e.target.id==='azsToggleEdit'){editing?stop(false):start()}
+   if(e.target.id==='azsSaveEdit')save();
+   if(e.target.id==='azsCancelEdit'){stop(true);toast('Alterações canceladas')}
+ },true);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(cloudLoad,500));else setTimeout(cloudLoad,500);
+})();
+</script>
 </body></html>
