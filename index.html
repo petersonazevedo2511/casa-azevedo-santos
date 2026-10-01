@@ -92,6 +92,16 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
 @media(max-width:700px){.azs-chronicles{grid-template-columns:1fr}}
 </style>
 
+
+<style id="profileTabsFix">
+.archive-tabs .profile-tab{border:1px solid #9c793777;padding:9px 12px;background:transparent;color:#5c421f;font:9px Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+.archive-tabs .profile-tab:hover,.archive-tabs .profile-tab.active{background:#6a4a1f;color:#fff1c9;border-color:#6a4a1f}
+.profile-tab-panel{grid-column:1/-1;display:none;border-top:1px solid #9c793766;padding:14px 2px 2px;color:#49351f;font:13px/1.55 Georgia,serif}
+.profile-tab-panel.open{display:block}
+.profile-tab-panel h4{margin:0 0 7px;color:#5c421f;font:16px Georgia,serif}
+.profile-tab-panel .empty-note{padding:10px;border-left:2px solid #9c7937;background:#9c79370b}
+</style>
+
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO SANTOS</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a></div></div></nav>
@@ -124,28 +134,28 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
 <div class="generation-tag" style="top:455px">III · FILHOS E CÔNJUGES</div>
 <div class="generation-tag" style="top:700px">IV · DESCENDENTES</div>
 
-<div class="royal-person" id="abzolon" style="left:80px;top:45px" data-name="Abzolon dos Santos" data-role="Avô paterno" data-text="Pai de Ricardo Abzolon dos Santos."><strong>Abzolon dos Santos</strong><small>Avô paterno</small></div>
-<div class="royal-person" id="maria" style="left:300px;top:45px" data-name="Maria Ferreira dos Santos" data-role="Avó paterna" data-text="Mãe de Ricardo Abzolon dos Santos."><strong>Maria Ferreira dos Santos</strong><small>Avó paterna</small></div>
+<div class="royal-person" id="abzolon" style="left:70px;top:45px" data-name="Abzolon dos Santos" data-role="Avô paterno" data-text="Pai de Ricardo Abzolon dos Santos."><strong>Abzolon dos Santos</strong><small>Avô paterno</small></div>
+<div class="royal-person" id="maria" style="left:290px;top:45px" data-name="Maria Ferreira dos Santos" data-role="Avó paterna" data-text="Mãe de Ricardo Abzolon dos Santos."><strong>Maria Ferreira dos Santos</strong><small>Avó paterna</small></div>
 
-<div class="royal-person" id="edilson" style="left:600px;top:45px" data-name="Edilson Paulo Azevedo" data-role="Avô materno" data-text="Pai de Vivian Oliveira de Azevedo Santos."><strong>Edilson Paulo Azevedo</strong><small>Avô materno</small></div>
-<div class="royal-person" id="laura" style="left:820px;top:45px" data-name="Laura Garcia de Oliveira" data-role="Avó materna" data-text="Mãe de Vivian Oliveira de Azevedo Santos."><strong>Laura Garcia de Oliveira</strong><small>Avó materna</small></div>
+<div class="royal-person" id="edilson" style="left:590px;top:45px" data-name="Edilson Paulo Azevedo" data-role="Avô materno" data-text="Pai de Vivian Oliveira de Azevedo Santos."><strong>Edilson Paulo Azevedo</strong><small>Avô materno</small></div>
+<div class="royal-person" id="laura" style="left:810px;top:45px" data-name="Laura Garcia de Oliveira" data-role="Avó materna" data-text="Mãe de Vivian Oliveira de Azevedo Santos."><strong>Laura Garcia de Oliveira</strong><small>Avó materna</small></div>
 
 <div class="royal-person inlaw" id="jair" style="left:1310px;top:45px" data-name="Jair José" data-role="Pai de Ketlin" data-text="Pai de Ketlin Lourenço de Melo Azevedo."><strong>Jair José</strong><small>Pai de Ketlin</small></div>
 <div class="royal-person inlaw" id="solange" style="left:1530px;top:45px" data-name="Solange Barbosa José" data-role="Mãe de Ketlin" data-text="Mãe de Ketlin Lourenço de Melo Azevedo."><strong>Solange Barbosa José</strong><small>Mãe de Ketlin</small></div>
 
-<div class="royal-person" id="ricardo" style="left:190px;top:250px" data-name="Ricardo Abzolon dos Santos" data-role="Pai" data-text="Nascido em 01/09/1980. Filho de Abzolon e Maria."><strong>Ricardo Abzolon dos Santos</strong><small>01/09/1980 · Pai</small></div>
-<div class="royal-person" id="vivian" style="left:710px;top:250px" data-name="Vivian Oliveira de Azevedo Santos" data-role="Mãe" data-text="Nascida em 23/09/1984. Filha de Edilson e Laura."><strong>Vivian Oliveira de Azevedo Santos</strong><small>23/09/1984 · Mãe</small></div>
+<div class="royal-person" id="ricardo" style="left:180px;top:250px" data-name="Ricardo Abzolon dos Santos" data-role="Pai" data-text="Nascido em 01/09/1980. Filho de Abzolon e Maria."><strong>Ricardo Abzolon dos Santos</strong><small>01/09/1980 · Pai</small></div>
+<div class="royal-person" id="vivian" style="left:400px;top:250px" data-name="Vivian Oliveira de Azevedo Santos" data-role="Mãe" data-text="Nascida em 23/09/1984. Filha de Edilson e Laura."><strong>Vivian Oliveira de Azevedo Santos</strong><small>23/09/1984 · Mãe</small></div>
 
-<div class="royal-person sibling" id="hemilly" style="left:110px;top:485px" data-name="Hemilly Thainara de Azevedo Santos" data-role="Irmã de Peterson" data-text="Filha de Ricardo e Vivian."><strong>Hemilly Thainara de Azevedo Santos</strong><small>Irmã</small></div>
-<div class="royal-person principal" id="peterson" style="left:460px;top:485px" data-name="Peterson Henrique Azevedo Santos" data-role="Filho de Ricardo e Vivian" data-text="Nascido em 25/11/2002."><strong>Peterson Henrique Azevedo Santos</strong><small>25/11/2002</small></div>
-<div class="royal-person sibling" id="mariaeduarda" style="left:810px;top:485px" data-name="Maria Eduarda de Azevedo Santos" data-role="Irmã de Peterson" data-text="Filha de Ricardo e Vivian."><strong>Maria Eduarda de Azevedo Santos</strong><small>Irmã</small></div>
+<div class="royal-person sibling" id="hemilly" style="left:70px;top:485px" data-name="Hemilly Thainara de Azevedo Santos" data-role="Irmã de Peterson" data-text="Filha de Ricardo e Vivian."><strong>Hemilly Thainara de Azevedo Santos</strong><small>Irmã</small></div>
+<div class="royal-person principal" id="peterson" style="left:330px;top:485px" data-name="Peterson Henrique Azevedo Santos" data-role="Filho de Ricardo e Vivian" data-text="Nascido em 25/11/2002."><strong>Peterson Henrique Azevedo Santos</strong><small>25/11/2002</small></div>
+<div class="royal-person sibling" id="mariaeduarda" style="left:590px;top:485px" data-name="Maria Eduarda de Azevedo Santos" data-role="Irmã de Peterson" data-text="Filha de Ricardo e Vivian."><strong>Maria Eduarda de Azevedo Santos</strong><small>Irmã</small></div>
 
-<div class="royal-person spouse" id="ketlin" style="left:1200px;top:485px" data-name="Ketlin Lourenço de Melo Azevedo" data-role="Esposa de Peterson" data-text="Nascida em 26/12/2001. Filha de Jair José e Solange Barbosa José."><strong>Ketlin Lourenço de Melo Azevedo</strong><small>26/12/2001 · Esposa</small></div>
+<div class="royal-person spouse" id="ketlin" style="left:850px;top:485px" data-name="Ketlin Lourenço de Melo Azevedo" data-role="Esposa de Peterson" data-text="Nascida em 26/12/2001. Filha de Jair José e Solange Barbosa José."><strong>Ketlin Lourenço de Melo Azevedo</strong><small>26/12/2001 · Esposa</small></div>
 
-<div class="royal-person child" id="ana" style="left:650px;top:730px" data-name="Ana Laura Melo Azevedo Santos" data-role="Filha de Peterson e Ketlin" data-text="Nascida em 28/02/2025."><strong>Ana Laura Melo Azevedo Santos</strong><small>28/02/2025 · Filha</small></div>
-<div class="royal-person child" id="luiza" style="left:980px;top:730px" data-name="Luiza Melo Azevedo Santos" data-role="Filha de Peterson e Ketlin" data-text="Data de nascimento ainda não registrada."><strong>Luiza Melo Azevedo Santos</strong><small>Filha · data a registrar</small></div>
+<div class="royal-person child" id="ana" style="left:470px;top:730px" data-name="Ana Laura Melo Azevedo Santos" data-role="Filha de Peterson e Ketlin" data-text="Nascida em 28/02/2025."><strong>Ana Laura Melo Azevedo Santos</strong><small>28/02/2025 · Filha</small></div>
+<div class="royal-person child" id="luiza" style="left:730px;top:730px" data-name="Luiza Melo Azevedo Santos" data-role="Filha de Peterson e Ketlin" data-text="Data de nascimento ainda não registrada."><strong>Luiza Melo Azevedo Santos</strong><small>Filha · data a registrar</small></div>
 
-<div class="royal-legend"><span>— casamento / união</span><span>│ descendência</span><span>┬ irmãos</span></div>
+<div class="royal-legend"><span>— união / casamento</span><span>│ descendência direta</span><span>┬ irmãos do mesmo núcleo</span></div>
 </div></div></div></div>
 </section>
 
@@ -275,7 +285,13 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
     <div class="archive-field"><b>Ramo familiar</b><span id="branch">Casa Azevedo Santos</span></div>
   </div>
   <div class="archive-bio"><h4>Crônica biográfica</h4><p id="mtext">Registro em formação.</p></div>
-  <div class="archive-tabs"><span>Retratos</span><span>Documentos</span><span>Crônicas</span><span>Descendência</span></div>
+  <div class="archive-tabs" role="tablist" aria-label="Arquivo individual">
+<button type="button" class="profile-tab" data-profile-tab="retratos">Retratos</button>
+<button type="button" class="profile-tab" data-profile-tab="documentos">Documentos</button>
+<button type="button" class="profile-tab" data-profile-tab="cronicas">Crônicas</button>
+<button type="button" class="profile-tab" data-profile-tab="descendencia">Descendência</button>
+</div>
+<div class="profile-tab-panel" id="profileTabPanel" aria-live="polite"></div>
 </div>
 </div>
 </div>
@@ -305,10 +321,20 @@ function family(a,b,kids,rail){
 }
 function renderGenealogy(){
  svg.innerHTML='';
+
+ // I → II: paternal grandparents -> Ricardo
  family('abzolon','maria',['ricardo'],205);
+
+ // I → II: maternal grandparents -> Vivian
  family('edilson','laura',['vivian'],205);
- family('jair','solange',['ketlin'],445);
+
+ // II: Ricardo + Vivian are a couple; their three children descend from the center of the couple.
  family('ricardo','vivian',['hemilly','peterson','mariaeduarda'],445);
+
+ // Separate branch: Jair + Solange -> Ketlin. This line stops at Ketlin and does NOT join Ricardo/Vivian.
+ family('jair','solange',['ketlin'],445);
+
+ // III → IV: Peterson + Ketlin -> Ana Laura and Luiza.
  family('peterson','ketlin',['ana','luiza'],690);
 }
 setTimeout(renderGenealogy,100);window.addEventListener('resize',renderGenealogy);
@@ -331,7 +357,7 @@ const profiles={
  solange:{birth:'Não registrado',death:'—',parents:'Não registrado',spouse:'Jair José',children:'Ketlin Lourenço de Melo Azevedo',branch:'Família de Ketlin',bio:'Aposentada, trabalhou como costureira. Lembrada por superação, sobrevivência, trabalho e fé.'}
 }
 document.querySelectorAll('.royal-person').forEach(el=>el.addEventListener('click',()=>{
- const p=profiles[el.id]||{}, name=el.dataset.name;
+ const p=profiles[el.id]||{}, name=el.dataset.name; modal.dataset.personId=el.id;
  document.getElementById('mname').textContent=name;
  document.getElementById('fullname').textContent=name;
  document.getElementById('mrole').textContent=el.dataset.role||'Membro da família';
@@ -345,7 +371,7 @@ document.querySelectorAll('.royal-person').forEach(el=>el.addEventListener('clic
  document.getElementById('mtext').textContent=p.bio||el.dataset.text||'Registro em formação.';
  modal.classList.add('open');
 }));
-document.getElementById('close').onclick=()=>modal.classList.remove('open');
+document.getElementById('close').onclick=()=>{modal.classList.remove('open');const q=document.getElementById('profileTabPanel');if(q){q.classList.remove('open');q.innerHTML=''}document.querySelectorAll('.profile-tab').forEach(b=>b.classList.remove('active'))};
 modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
 </script>
 <script>
@@ -670,6 +696,38 @@ document.addEventListener('DOMContentLoaded',function(){
       item.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act()}});
     });
   }
+})();
+</script>
+
+
+<script id="profileTabsController">
+(function(){
+ const panel=document.getElementById('profileTabPanel');
+ if(!panel)return;
+ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+ document.querySelectorAll('.profile-tab').forEach(btn=>{
+   btn.addEventListener('click',()=>{
+     const id=document.getElementById('modal')?.dataset.personId||'';
+     const p=(typeof profiles!=='undefined'&&profiles[id])?profiles[id]:{};
+     const name=document.getElementById('fullname')?.textContent||'Membro da família';
+     document.querySelectorAll('.profile-tab').forEach(b=>b.classList.toggle('active',b===btn));
+     const type=btn.dataset.profileTab;
+     let body='';
+     if(type==='retratos'){
+       body='<h4>Retratos de '+esc(name)+'</h4><div class="empty-note">Nenhuma fotografia foi adicionada ainda. As fotos serão incluídas quando o acervo familiar for enviado.</div>';
+     }else if(type==='documentos'){
+       const refs=JSON.parse(localStorage.getItem('azsDocumentRefs')||'[]').filter(x=>String(x.description||'').toLowerCase().includes(name.split(' ')[0].toLowerCase()));
+       body='<h4>Documentos de '+esc(name)+'</h4>'+(refs.length?refs.map(x=>'<p>• '+esc(x.description)+'</p>').join(''):'<div class="empty-note">Nenhum documento individual foi vinculado a este registro ainda.</div>');
+     }else if(type==='cronicas'){
+       body='<h4>Crônica de '+esc(name)+'</h4><p>'+esc(p.bio||'Não há crônica biográfica registrada para esta pessoa.')+'</p>';
+     }else{
+       const children=p.children||'—';
+       body='<h4>Descendência de '+esc(name)+'</h4>'+(children==='—'||/não registrado/i.test(children)?'<div class="empty-note">Não há descendência registrada neste arquivo.</div>':'<p><b>Filhos registrados:</b> '+esc(children)+'</p>');
+     }
+     panel.innerHTML=body;
+     panel.classList.add('open');
+   });
+ });
 })();
 </script>
 
