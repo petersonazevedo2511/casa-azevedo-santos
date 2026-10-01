@@ -74,7 +74,8 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
 .archive-bio{grid-column:1/-1;border-top:1px solid #87652c88;margin-top:6px;padding-top:12px}.archive-bio h4{margin:0 0 6px}.archive-bio p{line-height:1.55}
 .archive-tabs{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.archive-tabs span{border:1px solid #87652c66;padding:7px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.08em}
 @media(max-width:600px){.folio{padding:20px}.archive-profile{grid-template-columns:1fr}.archive-portrait{margin:auto}.archive-fields{grid-template-columns:1fr}.archive-bio,.archive-tabs{grid-column:auto}}
-</style></head>
+</style><link rel="icon" type="image/png" href="brasao-azevedo-santos.png">
+</head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO SANTOS</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a></div></div></nav>
 
@@ -222,9 +223,9 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
   <div class="archive-fields">
     <div class="archive-field"><b>Nome completo</b><span id="fullname">—</span></div>
     <div class="archive-field"><b>Posição na Casa</b><span id="mrole">—</span></div>
-    <div class="archive-field"><b>Nascimento</b><span id="birth">A registrar</span></div>
+    <div class="archive-field"><b>Nascimento</b><span id="birth">Não registrado</span></div>
     <div class="archive-field"><b>Falecimento</b><span id="death">—</span></div>
-    <div class="archive-field"><b>Pais</b><span id="parents">A registrar</span></div>
+    <div class="archive-field"><b>Pais</b><span id="parents">Não registrado</span></div>
     <div class="archive-field"><b>Cônjuge</b><span id="spouse">—</span></div>
     <div class="archive-field"><b>Filhos</b><span id="children">—</span></div>
     <div class="archive-field"><b>Ramo familiar</b><span id="branch">Casa Azevedo Santos</span></div>
@@ -276,14 +277,14 @@ const profiles={
  vivian:{birth:'23/09/1984 · Paraná',death:'—',parents:'Edilson Paulo Azevedo · Laura Garcia de Oliveira',spouse:'Ricardo Abzolon dos Santos',children:'Hemilly Thainara · Peterson Henrique · Maria Eduarda',branch:'Azevedo',bio:'Autônoma no ramo de salão de beleza. Artista, sentimental, batalhadora, dedicada ao lar e sonhadora.'},
  ana:{birth:'28/02/2025 · Maringá/PR',death:'—',parents:'Peterson Henrique Azevedo Santos · Ketlin Lourenço de Melo Azevedo',spouse:'—',children:'—',branch:'Azevedo Santos',bio:'Filha de Peterson e Ketlin, descrita pela família como linda e portadora de traços familiares marcantes.'},
  luiza:{birth:'Gestação · nascimento a registrar',death:'—',parents:'Peterson Henrique Azevedo Santos · Ketlin Lourenço de Melo Azevedo',spouse:'—',children:'—',branch:'Azevedo Santos',bio:'Aguardada pela família como uma bênção e continuidade da nova geração.'},
- hemilly:{birth:'13/07/2001 · Maringá/PR',death:'—',parents:'Ricardo Abzolon dos Santos · Vivian Oliveira de Azevedo Santos',spouse:'A registrar',children:'A registrar',branch:'Azevedo Santos',bio:'Professora, batalhadora e de alto astral.'},
- mariaeduarda:{birth:'11/05/2005 · Maringá/PR',death:'—',parents:'Ricardo Abzolon dos Santos · Vivian Oliveira de Azevedo Santos',spouse:'A registrar',children:'A registrar',branch:'Azevedo Santos',bio:'Atua em repartição pública. Batalhadora e artista.'},
- abzolon:{birth:'A registrar',death:'—',parents:'A registrar',spouse:'Maria Ferreira dos Santos',children:'Ricardo Abzolon dos Santos · Regiane dos Santos Sobral · Regina dos Santos',branch:'Santos',bio:'Aposentado, trabalhou como mestre de obras. Sua trajetória é lembrada por trabalho, superação e dedicação.'},
- maria:{birth:'A registrar',death:'—',parents:'Mãe: Cecília Esterlina · pai a registrar',spouse:'Abzolon dos Santos',children:'Ricardo Abzolon dos Santos · Regiane dos Santos Sobral · Regina dos Santos',branch:'Santos',bio:'Dedicada ao lar, lembrada como batalhadora e guerreira.'},
- edilson:{birth:'A registrar',death:'—',parents:'Cícero Simões de Azevedo · mãe a registrar',spouse:'Laura Garcia de Oliveira',children:'Vivian Oliveira de Azevedo Santos · Vanderleia Garcia de Azevedo · Adilson Azevedo',branch:'Azevedo',bio:'Autônomo e artista plástico. Descrito como homem de coração gigante, explorador e viajante.'},
- laura:{birth:'A registrar',death:'Falecida',parents:'Emanuel · Filomena',spouse:'Edilson Paulo Azevedo',children:'Vivian Oliveira de Azevedo Santos · Vanderleia Garcia de Azevedo · Adilson Azevedo',branch:'Garcia de Oliveira / Azevedo',bio:'Diarista. Batalhadora e sorridente, deixou seu legado familiar.'},
- jair:{birth:'A registrar',death:'—',parents:'A registrar',spouse:'Solange Barbosa José',children:'Ketlin Lourenço de Melo Azevedo',branch:'Família de Ketlin',bio:'Aposentado; trabalhou como supervisor na Cocamar. Conselheiro, pastor e homem de fé.'},
- solange:{birth:'A registrar',death:'—',parents:'A registrar',spouse:'Jair José',children:'Ketlin Lourenço de Melo Azevedo',branch:'Família de Ketlin',bio:'Aposentada, trabalhou como costureira. Lembrada por superação, sobrevivência, trabalho e fé.'}
+ hemilly:{birth:'13/07/2001 · Maringá/PR',death:'—',parents:'Ricardo Abzolon dos Santos · Vivian Oliveira de Azevedo Santos',spouse:'Não registrado',children:'Não registrado',branch:'Azevedo Santos',bio:'Professora, batalhadora e de alto astral.'},
+ mariaeduarda:{birth:'11/05/2005 · Maringá/PR',death:'—',parents:'Ricardo Abzolon dos Santos · Vivian Oliveira de Azevedo Santos',spouse:'Não registrado',children:'Não registrado',branch:'Azevedo Santos',bio:'Atua em repartição pública. Batalhadora e artista.'},
+ abzolon:{birth:'Não registrado',death:'—',parents:'Não registrado',spouse:'Maria Ferreira dos Santos',children:'Ricardo Abzolon dos Santos · Regiane dos Santos Sobral · Regina dos Santos',branch:'Santos',bio:'Aposentado, trabalhou como mestre de obras. Sua trajetória é lembrada por trabalho, superação e dedicação.'},
+ maria:{birth:'Não registrado',death:'—',parents:'Mãe: Cecília Esterlina · pai a registrar',spouse:'Abzolon dos Santos',children:'Ricardo Abzolon dos Santos · Regiane dos Santos Sobral · Regina dos Santos',branch:'Santos',bio:'Dedicada ao lar, lembrada como batalhadora e guerreira.'},
+ edilson:{birth:'Não registrado',death:'—',parents:'Cícero Simões de Azevedo · mãe a registrar',spouse:'Laura Garcia de Oliveira',children:'Vivian Oliveira de Azevedo Santos · Vanderleia Garcia de Azevedo · Adilson Azevedo',branch:'Azevedo',bio:'Autônomo e artista plástico. Descrito como homem de coração gigante, explorador e viajante.'},
+ laura:{birth:'Não registrado',death:'Falecida',parents:'Emanuel · Filomena',spouse:'Edilson Paulo Azevedo',children:'Vivian Oliveira de Azevedo Santos · Vanderleia Garcia de Azevedo · Adilson Azevedo',branch:'Garcia de Oliveira / Azevedo',bio:'Diarista. Batalhadora e sorridente, deixou seu legado familiar.'},
+ jair:{birth:'Não registrado',death:'—',parents:'Não registrado',spouse:'Solange Barbosa José',children:'Ketlin Lourenço de Melo Azevedo',branch:'Família de Ketlin',bio:'Aposentado; trabalhou como supervisor na Cocamar. Conselheiro, pastor e homem de fé.'},
+ solange:{birth:'Não registrado',death:'—',parents:'Não registrado',spouse:'Jair José',children:'Ketlin Lourenço de Melo Azevedo',branch:'Família de Ketlin',bio:'Aposentada, trabalhou como costureira. Lembrada por superação, sobrevivência, trabalho e fé.'}
 }
 document.querySelectorAll('.royal-person').forEach(el=>el.addEventListener('click',()=>{
  const p=profiles[el.id]||{}, name=el.dataset.name;
@@ -291,9 +292,9 @@ document.querySelectorAll('.royal-person').forEach(el=>el.addEventListener('clic
  document.getElementById('fullname').textContent=name;
  document.getElementById('mrole').textContent=el.dataset.role||'Membro da família';
  document.getElementById('mmonogram').textContent=(name||'⚜').charAt(0);
- document.getElementById('birth').textContent=p.birth||'A registrar';
+ document.getElementById('birth').textContent=p.birth||'Não registrado';
  document.getElementById('death').textContent=p.death||'—';
- document.getElementById('parents').textContent=p.parents||'A registrar';
+ document.getElementById('parents').textContent=p.parents||'Não registrado';
  document.getElementById('spouse').textContent=p.spouse||'—';
  document.getElementById('children').textContent=p.children||'—';
  document.getElementById('branch').textContent=p.branch||'Casa Azevedo Santos';
@@ -383,7 +384,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElement
    <form id="azsPersonForm" class="azs-grid">
     <input type="hidden" id="azsId">
     <label>Nome completo<input id="azsName" required></label>
-    <label>Nascimento<input id="azsBirth" placeholder="dd/mm/aaaa ou A registrar"></label>
+    <label>Nascimento<input id="azsBirth" placeholder="dd/mm/aaaa ou Não registrado"></label>
     <label>Situação<select id="azsStatus"><option>Vivo(a)</option><option>Falecido(a)</option><option>Gestação</option><option>Não registrado</option></select></label>
     <label>Local de origem<input id="azsPlace"></label>
     <label>Profissão / ocupação<input id="azsJob"></label>
@@ -436,27 +437,27 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElement
  {id:'hemilly',name:'Hemilly Thainara de Azevedo Santos',birth:'13/07/2001',status:'Vivo(a)',place:'Maringá/PR',job:'Professora',branch:'Azevedo Santos',father:'Ricardo Abzolon dos Santos',mother:'Vivian Oliveira de Azevedo Santos',spouse:'',children:'',bio:'Batalhadora e de alto astral.'},
  {id:'mariaeduarda',name:'Maria Eduarda de Azevedo Santos',birth:'11/05/2005',status:'Vivo(a)',place:'Maringá/PR',job:'Repartição pública',branch:'Azevedo Santos',father:'Ricardo Abzolon dos Santos',mother:'Vivian Oliveira de Azevedo Santos',spouse:'',children:'',bio:'Batalhadora e artista.'},
  {id:'ana',name:'Ana Laura Melo Azevedo Santos',birth:'28/02/2025',status:'Vivo(a)',place:'Maringá/PR',job:'',branch:'Azevedo Santos',father:'Peterson Henrique Azevedo Santos',mother:'Ketlin Lourenço de Melo Azevedo',spouse:'',children:'',bio:'Linda e reconhecida pela família por seus genes fortes.'},
- {id:'luiza',name:'Luiza Melo Azevedo Santos',birth:'A registrar',status:'Gestação',place:'',job:'',branch:'Azevedo Santos',father:'Peterson Henrique Azevedo Santos',mother:'Ketlin Lourenço de Melo Azevedo',spouse:'',children:'',bio:'Sua chegada é celebrada como uma bênção para a família.'},
- {id:'abzolon',name:'Abzolon dos Santos',birth:'A registrar',status:'Vivo(a)',place:'',job:'Aposentado — mestre de obras',branch:'dos Santos',father:'',mother:'',spouse:'Maria Ferreira dos Santos',children:'Ricardo Abzolon dos Santos, Regiane dos Santos Sobral, Regina dos Santos',bio:'Batalhador e marcado pela superação.'},
- {id:'maria',name:'Maria Ferreira dos Santos',birth:'A registrar',status:'Vivo(a)',place:'',job:'Do lar',branch:'Ferreira / dos Santos',father:'',mother:'Cecília Esterlina',spouse:'Abzolon dos Santos',children:'Ricardo Abzolon dos Santos, Regiane dos Santos Sobral, Regina dos Santos',bio:'Batalhadora e guerreira.'},
- {id:'edilson',name:'Edilson Paulo Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'Autônomo — artista plástico',branch:'Azevedo',father:'Cícero Simões de Azevedo',mother:'',spouse:'Laura Garcia de Oliveira',children:'Vivian Oliveira de Azevedo Santos, Vanderleia Garcia de Azevedo, Adilson Azevedo',bio:'Artista, explorador, viajante e lembrado por seu coração gigante.'},
- {id:'laura',name:'Laura Garcia de Oliveira',birth:'A registrar',status:'Falecido(a)',place:'',job:'Diarista',branch:'Garcia de Oliveira',father:'Emanuel',mother:'Filomena',spouse:'Edilson Paulo Azevedo',children:'Vivian Oliveira de Azevedo Santos, Vanderleia Garcia de Azevedo, Adilson Azevedo',bio:'Batalhadora, sorridente e lembrada por seu legado familiar.'},
- {id:'jair',name:'Jair José',birth:'A registrar',status:'Vivo(a)',place:'',job:'Aposentado — ex-supervisor da Cocamar',branch:'José',father:'',mother:'',spouse:'Solange Barbosa José',children:'Ketlin Lourenço de Melo Azevedo',bio:'Batalhador, conselheiro, pastor e homem de fé.'},
- {id:'solange',name:'Solange Barbosa José',birth:'A registrar',status:'Vivo(a)',place:'',job:'Aposentada — costureira',branch:'Barbosa José',father:'',mother:'',spouse:'Jair José',children:'Ketlin Lourenço de Melo Azevedo',bio:'Batalhadora, marcada pela superação, sobrevivência e fé.'},
- {id:'regiane',name:'Regiane dos Santos Sobral',birth:'A registrar',status:'Vivo(a)',place:'',job:'Diarista',branch:'dos Santos',father:'Abzolon dos Santos',mother:'Maria Ferreira dos Santos',spouse:'Aurélio',children:'Bruna (adotiva), Isabela (adotiva)',bio:'Batalhadora, de alto astral, viveu um período na Espanha.'},
- {id:'regina',name:'Regina dos Santos',birth:'A registrar',status:'Vivo(a)',place:'',job:'',branch:'dos Santos',father:'Abzolon dos Santos',mother:'Maria Ferreira dos Santos',spouse:'',children:'',bio:'Viveu um período no Japão.'},
- {id:'vanderleia',name:'Vanderleia Garcia de Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'Diarista',branch:'Azevedo',father:'Edilson Paulo Azevedo',mother:'Laura Garcia de Oliveira',spouse:'Marcos',children:'Stephany de Azevedo, Kamilly de Azevedo, Isabela de Azevedo',bio:'Batalhadora, marcada por dificuldades e resiliência.'},
- {id:'adilson',name:'Adilson Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'Artista plástico e educador físico',branch:'Azevedo',father:'Edilson Paulo Azevedo',mother:'Laura Garcia de Oliveira',spouse:'João; anteriormente casado com Max',children:'',bio:'Artista ligado a quadros, circo e pintura, com reconhecimento por seu trabalho.'},
- {id:'stephany',name:'Stephany de Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Não registrado',mother:'Vanderleia Garcia de Azevedo',spouse:'',children:'Maria Júlia Azevedo, Helena Azevedo, Sophia Azevedo',bio:''},
- {id:'kamilly',name:'Kamilly de Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Não registrado',mother:'Vanderleia Garcia de Azevedo',spouse:'',children:'',bio:''},
- {id:'isabela_v',name:'Isabela de Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Marcos',mother:'Vanderleia Garcia de Azevedo',spouse:'',children:'',bio:''},
- {id:'mariajulia',name:'Maria Júlia Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Não registrado',mother:'Stephany de Azevedo',spouse:'',children:'',bio:''},
- {id:'helena',name:'Helena Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Não registrado',mother:'Stephany de Azevedo',spouse:'',children:'',bio:''},
- {id:'sophia',name:'Sophia Azevedo',birth:'A registrar',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Rafael',mother:'Stephany de Azevedo',spouse:'',children:'',bio:''},
- {id:'cicero',name:'Cícero Simões de Azevedo',birth:'A registrar',status:'Falecido(a)',place:'',job:'Registro histórico a confirmar',branch:'Azevedo',father:'',mother:'',spouse:'Não registrado',children:'Edilson Paulo Azevedo',bio:'Ascendente da linhagem Azevedo. Informações históricas adicionais permanecem reservadas para confirmação documental.'},
- {id:'cecilia',name:'Cecília Esterlina',birth:'A registrar',status:'Vivo(a)',place:'',job:'',branch:'',father:'',mother:'',spouse:'Não registrado',children:'Maria Ferreira dos Santos',bio:''},
- {id:'emanuel',name:'Emanuel',birth:'A registrar',status:'Falecido(a)',place:'',job:'',branch:'',father:'',mother:'',spouse:'Filomena',children:'Laura Garcia de Oliveira',bio:''},
- {id:'filomena',name:'Filomena',birth:'A registrar',status:'Falecido(a)',place:'',job:'',branch:'',father:'',mother:'',spouse:'Emanuel',children:'Laura Garcia de Oliveira',bio:''}
+ {id:'luiza',name:'Luiza Melo Azevedo Santos',birth:'Não registrado',status:'Gestação',place:'',job:'',branch:'Azevedo Santos',father:'Peterson Henrique Azevedo Santos',mother:'Ketlin Lourenço de Melo Azevedo',spouse:'',children:'',bio:'Sua chegada é celebrada como uma bênção para a família.'},
+ {id:'abzolon',name:'Abzolon dos Santos',birth:'Não registrado',status:'Vivo(a)',place:'',job:'Aposentado — mestre de obras',branch:'dos Santos',father:'',mother:'',spouse:'Maria Ferreira dos Santos',children:'Ricardo Abzolon dos Santos, Regiane dos Santos Sobral, Regina dos Santos',bio:'Batalhador e marcado pela superação.'},
+ {id:'maria',name:'Maria Ferreira dos Santos',birth:'Não registrado',status:'Vivo(a)',place:'',job:'Do lar',branch:'Ferreira / dos Santos',father:'',mother:'Cecília Esterlina',spouse:'Abzolon dos Santos',children:'Ricardo Abzolon dos Santos, Regiane dos Santos Sobral, Regina dos Santos',bio:'Batalhadora e guerreira.'},
+ {id:'edilson',name:'Edilson Paulo Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'Autônomo — artista plástico',branch:'Azevedo',father:'Cícero Simões de Azevedo',mother:'',spouse:'Laura Garcia de Oliveira',children:'Vivian Oliveira de Azevedo Santos, Vanderleia Garcia de Azevedo, Adilson Azevedo',bio:'Artista, explorador, viajante e lembrado por seu coração gigante.'},
+ {id:'laura',name:'Laura Garcia de Oliveira',birth:'Não registrado',status:'Falecido(a)',place:'',job:'Diarista',branch:'Garcia de Oliveira',father:'Emanuel',mother:'Filomena',spouse:'Edilson Paulo Azevedo',children:'Vivian Oliveira de Azevedo Santos, Vanderleia Garcia de Azevedo, Adilson Azevedo',bio:'Batalhadora, sorridente e lembrada por seu legado familiar.'},
+ {id:'jair',name:'Jair José',birth:'Não registrado',status:'Vivo(a)',place:'',job:'Aposentado — ex-supervisor da Cocamar',branch:'José',father:'',mother:'',spouse:'Solange Barbosa José',children:'Ketlin Lourenço de Melo Azevedo',bio:'Batalhador, conselheiro, pastor e homem de fé.'},
+ {id:'solange',name:'Solange Barbosa José',birth:'Não registrado',status:'Vivo(a)',place:'',job:'Aposentada — costureira',branch:'Barbosa José',father:'',mother:'',spouse:'Jair José',children:'Ketlin Lourenço de Melo Azevedo',bio:'Batalhadora, marcada pela superação, sobrevivência e fé.'},
+ {id:'regiane',name:'Regiane dos Santos Sobral',birth:'Não registrado',status:'Vivo(a)',place:'',job:'Diarista',branch:'dos Santos',father:'Abzolon dos Santos',mother:'Maria Ferreira dos Santos',spouse:'Aurélio',children:'Bruna (adotiva), Isabela (adotiva)',bio:'Batalhadora, de alto astral, viveu um período na Espanha.'},
+ {id:'regina',name:'Regina dos Santos',birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'dos Santos',father:'Abzolon dos Santos',mother:'Maria Ferreira dos Santos',spouse:'',children:'',bio:'Viveu um período no Japão.'},
+ {id:'vanderleia',name:'Vanderleia Garcia de Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'Diarista',branch:'Azevedo',father:'Edilson Paulo Azevedo',mother:'Laura Garcia de Oliveira',spouse:'Marcos',children:'Stephany de Azevedo, Kamilly de Azevedo, Isabela de Azevedo',bio:'Batalhadora, marcada por dificuldades e resiliência.'},
+ {id:'adilson',name:'Adilson Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'Artista plástico e educador físico',branch:'Azevedo',father:'Edilson Paulo Azevedo',mother:'Laura Garcia de Oliveira',spouse:'João; anteriormente casado com Max',children:'',bio:'Artista ligado a quadros, circo e pintura, com reconhecimento por seu trabalho.'},
+ {id:'stephany',name:'Stephany de Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Não registrado',mother:'Vanderleia Garcia de Azevedo',spouse:'',children:'Maria Júlia Azevedo, Helena Azevedo, Sophia Azevedo',bio:''},
+ {id:'kamilly',name:'Kamilly de Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Não registrado',mother:'Vanderleia Garcia de Azevedo',spouse:'',children:'',bio:''},
+ {id:'isabela_v',name:'Isabela de Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Marcos',mother:'Vanderleia Garcia de Azevedo',spouse:'',children:'',bio:''},
+ {id:'mariajulia',name:'Maria Júlia Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Não registrado',mother:'Stephany de Azevedo',spouse:'',children:'',bio:''},
+ {id:'helena',name:'Helena Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Não registrado',mother:'Stephany de Azevedo',spouse:'',children:'',bio:''},
+ {id:'sophia',name:'Sophia Azevedo',birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'Azevedo',father:'Rafael',mother:'Stephany de Azevedo',spouse:'',children:'',bio:''},
+ {id:'cicero',name:'Cícero Simões de Azevedo',birth:'Não registrado',status:'Falecido(a)',place:'',job:'Registro histórico a confirmar',branch:'Azevedo',father:'',mother:'',spouse:'Não registrado',children:'Edilson Paulo Azevedo',bio:'Ascendente da linhagem Azevedo. Informações históricas adicionais permanecem reservadas para confirmação documental.'},
+ {id:'cecilia',name:'Cecília Esterlina',birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'',father:'',mother:'',spouse:'Não registrado',children:'Maria Ferreira dos Santos',bio:''},
+ {id:'emanuel',name:'Emanuel',birth:'Não registrado',status:'Falecido(a)',place:'',job:'',branch:'',father:'',mother:'',spouse:'Filomena',children:'Laura Garcia de Oliveira',bio:''},
+ {id:'filomena',name:'Filomena',birth:'Não registrado',status:'Falecido(a)',place:'',job:'',branch:'',father:'',mother:'',spouse:'Emanuel',children:'Laura Garcia de Oliveira',bio:''}
  ];
  let people;
  try{people=JSON.parse(localStorage.getItem(STORE))||seed}catch(e){people=seed}
@@ -515,5 +516,41 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElement
 })();
 </script>
 <!-- AZS_SYSTEM_V2_END -->
+
+
+<style id="familyAreaFix">
+.family-vault{position:fixed;inset:0;z-index:120;background:#050907e8;display:none;align-items:center;justify-content:center;padding:18px}
+.family-vault.open{display:flex}.family-vault-card{width:min(820px,100%);max-height:90vh;overflow:auto;background:#121916;border:1px solid #a98747;color:#ddd1b5;padding:25px;box-shadow:0 30px 100px #000}.family-vault-card h2{font-family:Georgia,serif;color:#ead49b;margin-top:0}.family-vault-close{float:right;background:none;border:0;color:#ead49b;font-size:28px;cursor:pointer}.family-vault-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.family-vault-item{border:1px solid #a9874738;padding:13px;background:#0d1411}.family-vault-item b{display:block;color:#ead49b;font-family:Georgia,serif}.family-vault-note{margin-top:14px;border-left:2px solid #a98747;padding:10px;background:#a987470e;font-size:11px;line-height:1.55}@media(max-width:650px){.family-vault-grid{grid-template-columns:1fr}}
+</style>
+<div class="family-vault" id="familyVault">
+ <div class="family-vault-card">
+  <button class="family-vault-close" id="familyVaultClose">×</button>
+  <div style="font-size:9px;letter-spacing:.16em;color:#a99f8b">ARQUIVO RESERVADO</div>
+  <h2>Área da Família</h2>
+  <div class="family-vault-grid">
+   <div class="family-vault-item"><b>Arquivo genealógico</b><span>Consulta aos registros familiares cadastrados.</span></div>
+   <div class="family-vault-item"><b>Documentos</b><span>Espaço preparado para certidões, registros, cartas e manuscritos.</span></div>
+   <div class="family-vault-item"><b>Retratos</b><span>Acervo fotográfico será incluído quando as imagens forem fornecidas.</span></div>
+   <div class="family-vault-item"><b>Administração</b><span>Use “Administrar Arquivo” para cadastrar e editar registros neste navegador.</span></div>
+  </div>
+  <div class="family-vault-note">A autenticação segura entre dispositivos ainda depende da conexão com banco de dados. Esta tela não finge ser uma área protegida antes dessa etapa.</div>
+ </div>
+</div>
+<script>
+(function(){
+ const vault=document.getElementById('familyVault'), close=document.getElementById('familyVaultClose');
+ if(close) close.onclick=()=>vault.classList.remove('open');
+ if(vault) vault.onclick=e=>{if(e.target===vault)vault.classList.remove('open')};
+ const candidates=[...document.querySelectorAll('button,a')];
+ candidates.forEach(el=>{
+   const t=(el.textContent||'').toLowerCase();
+   if(t.includes('câmara privada')||t.includes('area da familia')||t.includes('área da família')||t.includes('acessar arquivo privado')||t.includes('autenticação será configurada')){
+      el.disabled=false;
+      el.removeAttribute('disabled');
+      el.onclick=(e)=>{e.preventDefault();vault.classList.add('open')};
+   }
+ });
+})();
+</script>
 
 </body></html>
