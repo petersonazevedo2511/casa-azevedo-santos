@@ -417,6 +417,27 @@ body.azs-editor-layout #genealogyLines{display:none!important}
 body.azs-genealogy-edit #genealogyLines{display:none!important}
 </style>
 
+
+<style id="azsExistingPersonPickerStyle">
+#azsExistingPersonPicker{display:none;position:fixed;inset:0;z-index:40000;background:#050907d9;align-items:center;justify-content:center;padding:18px}
+#azsExistingPersonPicker.azs-open{display:flex}
+#azsExistingPersonPicker .azs-picker-box{width:min(560px,96vw);max-height:82vh;overflow:auto;background:#101914;border:1px solid #b58d46;box-shadow:0 20px 60px #000;padding:18px;color:#ead4a0}
+#azsExistingPersonPicker h3{margin:0 0 5px;font:600 18px Georgia,serif;letter-spacing:.08em}
+#azsExistingPersonPicker p{margin:0 0 14px;color:#c8b98f;font:12px Arial,sans-serif;line-height:1.45}
+#azsExistingPersonList{display:grid;gap:7px}
+#azsExistingPersonList button{width:100%;text-align:left;background:#17211c;border:1px solid #7f693e;color:#f0dfb6;padding:10px 12px;cursor:pointer}
+#azsExistingPersonList button:hover{border-color:#d3aa58;background:#202d25}
+#azsExistingPersonList button small{display:block;margin-top:4px;color:#aa9b78}
+#azsExistingPersonPicker .azs-picker-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+#azsExistingPersonPicker .azs-picker-actions button{background:#17211c;border:1px solid #98763c;color:#ead4a0;padding:9px 12px;cursor:pointer}
+</style>
+
+
+<style id="azsAdminExitStyle">
+#azsAdminExitBtn{display:none;background:#171d19;border:1px solid #b58d46;color:#ead4a0;padding:9px 12px;font-size:10px;cursor:pointer}
+body.azs-is-admin #azsAdminExitBtn{display:inline-block}
+</style>
+
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a><a href="#linha-do-tempo">TEMPO</a><a href="#memorial">MEMORIAL</a></div></div></nav>
@@ -2046,6 +2067,19 @@ body.azs-exact-picking .royal-person{cursor:crosshair!important}
 </script>
 
 
+
+<div id="azsExistingPersonPicker" aria-hidden="true">
+  <div class="azs-picker-box">
+    <h3>ADICIONAR À ÁRVORE</h3>
+    <p>Escolha uma pessoa já cadastrada no Arquivo Familiar. O card aproveitará automaticamente as informações existentes.</p>
+    <div id="azsExistingPersonList"></div>
+    <div class="azs-picker-actions">
+      <button type="button" id="azsPickerNew">+ CADASTRAR NOVA PESSOA</button>
+      <button type="button" id="azsPickerClose">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
 <div id="azsGenealogyEditor">
   <b>EDITOR DA ÁRVORE</b>
   <button type="button" id="azsEdAdd">+ ADICIONAR CARD</button>
@@ -2207,23 +2241,79 @@ body.azs-exact-picking .royal-person{cursor:crosshair!important}
     applyLayout();
   }
 
-  function addCard(){
+  function createCardFromPerson(p){
+    if(!p||!p.id)return;
+    const already=document.getElementById(p.id);
+    if(already){
+      closePersonPicker();
+      selectCard(already);
+      hint('Essa pessoa já está na árvore.');
+      return;
+    }
+    const el=document.createElement('div');
+    el.className='royal-person';
+    el.id=p.id;
+    el.dataset.name=p.name||'';
+    const detail=p.birth||p.place||p.job||'MEMBRO DA FAMÍLIA';
+    el.innerHTML='<strong></strong><small></small>';
+    el.querySelector('strong').textContent=p.name||'Sem nome';
+    el.querySelector('small').textContent=detail;
+    el.style.left='700px';el.style.top='760px';el.style.width='190px';
+    tree().appendChild(el);
+    layout[p.id]={x:700,y:760,w:190,font:14};
+    closePersonPicker();
+    selectCard(el);
+    redrawLines();
+    hint('Pessoa adicionada com os dados já cadastrados. Arraste o card para a posição desejada.');
+  }
+
+  function createNewPerson(){
+    closePersonPicker();
     const name=prompt('Nome completo da pessoa:');
     if(!name||!name.trim())return;
     const id='p_'+Date.now();
     const p={id,name:name.trim(),birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'',father:'',mother:'',spouse:'',children:'',bio:''};
     people().push(p);
-    const el=document.createElement('div');
-    el.className='royal-person';
-    el.id=id;
-    el.dataset.name=p.name;
-    el.innerHTML='<strong></strong><small>NOVO MEMBRO</small>';
-    el.querySelector('strong').textContent=p.name;
-    el.style.left='700px';el.style.top='760px';el.style.width='190px';
-    tree().appendChild(el);
-    layout[id]={x:700,y:760,w:190,font:14};
-    savePeople();selectCard(el);redrawLines();
-    hint('Card criado. Agora clique, segure e arraste.');
+    savePeople();
+    createCardFromPerson(p);
+  }
+
+  function closePersonPicker(){
+    const modal=document.getElementById('azsExistingPersonPicker');
+    if(modal){modal.classList.remove('azs-open');modal.setAttribute('aria-hidden','true')}
+  }
+
+  function addCard(){
+    const modal=document.getElementById('azsExistingPersonPicker');
+    const list=document.getElementById('azsExistingPersonList');
+    if(!modal||!list)return createNewPerson();
+
+    const existingIds=new Set(cards().map(c=>c.id));
+    const available=people()
+      .filter(p=>p&&p.id&&!existingIds.has(p.id))
+      .sort((a,b)=>(a.name||'').localeCompare(b.name||'','pt-BR'));
+
+    list.innerHTML='';
+    if(!available.length){
+      const empty=document.createElement('div');
+      empty.style.cssText='padding:12px;border:1px dashed #7f693e;color:#c8b98f;font:12px Arial,sans-serif';
+      empty.textContent='Todas as pessoas cadastradas no Arquivo Familiar já estão na árvore.';
+      list.appendChild(empty);
+    }else{
+      available.forEach(p=>{
+        const b=document.createElement('button');
+        b.type='button';
+        const title=document.createElement('span');
+        title.textContent=p.name||'Sem nome';
+        const meta=document.createElement('small');
+        meta.textContent=[p.birth,p.place,p.job].filter(Boolean).join(' • ')||'Cadastro existente';
+        b.appendChild(title);b.appendChild(meta);
+        b.onclick=()=>createCardFromPerson(p);
+        list.appendChild(b);
+      });
+    }
+    modal.classList.add('azs-open');
+    modal.setAttribute('aria-hidden','false');
   }
 
   function deleteCard(){
@@ -2275,6 +2365,11 @@ body.azs-exact-picking .royal-person{cursor:crosshair!important}
 
   function wirePanel(){
     document.getElementById('azsEdAdd').onclick=addCard;
+    document.getElementById('azsPickerClose').onclick=closePersonPicker;
+    document.getElementById('azsPickerNew').onclick=createNewPerson;
+    document.getElementById('azsExistingPersonPicker').addEventListener('click',e=>{
+      if(e.target.id==='azsExistingPersonPicker')closePersonPicker();
+    });
     document.getElementById('azsEdDelete').onclick=deleteCard;
     document.getElementById('azsEdSave').onclick=saveAll;
     document.getElementById('azsEdExit').onclick=()=>{
@@ -2357,6 +2452,54 @@ body.azs-exact-picking .royal-person{cursor:crosshair!important}
   }else{
     installButton();wirePanel();setTimeout(loadLayout,700);
   }
+})();
+</script>
+
+
+<script id="azsAdminExitController">
+(function(){
+  function install(){
+    if(document.getElementById('azsAdminExitBtn')) return;
+    const access = [...document.querySelectorAll('button,a')].find(el =>
+      /ACESSO\s+ADMINISTRADOR/i.test((el.textContent||'').trim())
+    );
+    if(!access){ setTimeout(install,150); return; }
+
+    const b=document.createElement('button');
+    b.type='button';
+    b.id='azsAdminExitBtn';
+    b.textContent='SAIR DO MODO ADMINISTRADOR';
+    access.insertAdjacentElement('afterend',b);
+
+    b.addEventListener('click', async function(e){
+      e.preventDefault();
+      e.stopPropagation();
+
+      /* Fecha qualquer interface administrativa antes do logout. */
+      document.body.classList.remove(
+        'azs-genealogy-edit',
+        'azs-exact-picking',
+        'azs-admin-open'
+      );
+      const editor=document.getElementById('azsGenealogyEditor');
+      if(editor) editor.style.display='';
+
+      try{
+        if(window.firebase && firebase.auth){
+          await firebase.auth().signOut();
+        }
+      }catch(err){
+        console.error('Erro ao sair do administrador:',err);
+      }
+
+      document.body.classList.remove('azs-is-admin');
+      location.reload();
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',install);
+  }else install();
 })();
 </script>
 
