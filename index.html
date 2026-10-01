@@ -2504,96 +2504,120 @@ body.azs-exact-picking .royal-person{cursor:crosshair!important}
 </script>
 
 
-<script id="azsPublicTreePersistenceFix">
+<script id="azsTreePublicHydrationV2">
 (function(){
-  const STORAGE='azs_genealogy_editor_layout_v1';
+ const STORAGE='azs_genealogy_editor_layout_v1';
+ const tree=()=>document.getElementById('tree');
+ const people=()=>window.azsPeople||[];
+ const byId=()=>new Map(people().map(p=>[p.id,p]));
 
-  function tree(){return document.getElementById('tree')}
-  function cards(){return tree()?[...tree().querySelectorAll('.royal-person[id]')]:[]}
-  function apply(layout){
-    if(!layout||typeof layout!=='object')return;
-    let used=false;
-    cards().forEach(el=>{
-      const d=layout[el.id]; if(!d)return;
-      if(Number.isFinite(+d.x))el.style.left=(+d.x)+'px';
-      if(Number.isFinite(+d.y))el.style.top=(+d.y)+'px';
-      if(Number.isFinite(+d.w))el.style.width=(+d.w)+'px';
-      const st=el.querySelector('strong');
-      if(st&&Number.isFinite(+d.font))st.style.fontSize=(+d.font)+'px';
-      used=true;
-    });
-    if(used)document.body.classList.add('azs-editor-layout');
-  }
+ function makeCard(p){
+   const t=tree(); if(!t||!p||!p.id||document.getElementById(p.id))return;
+   const el=document.createElement('div');
+   el.className='royal-person';
+   el.id=p.id;
+   el.dataset.name=p.name||'';
+   el.innerHTML='<strong></strong><small></small>';
+   el.querySelector('strong').textContent=p.name||'Sem nome';
+   el.querySelector('small').textContent=p.birth||p.place||p.job||'MEMBRO DA FAMÍLIA';
+   t.appendChild(el);
+ }
 
-  async function publicLoad(){
-    let local={};
-    try{local=JSON.parse(localStorage.getItem(STORAGE)||'{}')||{}}catch(_){}
-    apply(local);
+ function ensureCards(layout){
+   const map=byId();
+   Object.keys(layout||{}).forEach(id=>{
+     if(!document.getElementById(id)&&map.has(id))makeCard(map.get(id));
+   });
+ }
 
-    try{
-      if(window.firebase&&firebase.firestore){
-        const db=firebase.firestore();
+ function center(el){return{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight/2}}
+ function svg(){
+   let s=document.getElementById('azsEditorLines');
+   if(!s&&tree()){
+     s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+     s.id='azsEditorLines'; tree().prepend(s);
+   }
+   return s;
+ }
+ function line(s,a,b,spouse){
+   if(!a||!b)return;
+   const A=center(a),B=center(b),p=document.createElementNS('http://www.w3.org/2000/svg','path');
+   if(spouse)p.setAttribute('d',`M${A.x} ${A.y} L${B.x} ${B.y}`);
+   else{const y=(A.y+B.y)/2;p.setAttribute('d',`M${A.x} ${A.y} V${y} H${B.x} V${B.y}`)}
+   s.appendChild(p);
+ }
+ function draw(){
+   const s=svg(); if(!s)return; s.innerHTML='';
+   const names=new Map(people().map(p=>[p.name,p])), couples=new Set();
+   people().forEach(p=>{
+     const child=document.getElementById(p.id); if(!child)return;
+     if(p.father){const q=names.get(p.father);if(q)line(s,document.getElementById(q.id),child,false)}
+     if(p.mother){const q=names.get(p.mother);if(q)line(s,document.getElementById(q.id),child,false)}
+     if(p.spouse){
+       const q=names.get(p.spouse);
+       if(q){
+         const k=[p.id,q.id].sort().join('|');
+         if(!couples.has(k)){couples.add(k);line(s,child,document.getElementById(q.id),true)}
+       }
+     }
+   });
+ }
+ function apply(layout){
+   if(!layout||typeof layout!=='object')return;
+   ensureCards(layout);
+   Object.entries(layout).forEach(([id,d])=>{
+     const el=document.getElementById(id); if(!el||!d)return;
+     if(Number.isFinite(Number(d.x)))el.style.left=Number(d.x)+'px';
+     if(Number.isFinite(Number(d.y)))el.style.top=Number(d.y)+'px';
+     if(Number.isFinite(Number(d.w)))el.style.width=Number(d.w)+'px';
+     const st=el.querySelector('strong');
+     if(st&&Number.isFinite(Number(d.font)))st.style.fontSize=Number(d.font)+'px';
+   });
+   if(Object.keys(layout).length)document.body.classList.add('azs-editor-layout');
+   draw();
+ }
 
-        /* Dados familiares: leitura é pública pelas regras já usadas no projeto. */
-        const fam=await db.collection('arquivo').doc('familia').get();
-        if(fam.exists){
-          const data=fam.data()||{};
-          const cloudPeople=Array.isArray(data.people)?data.people:
-                            Array.isArray(data)?data:null;
-          if(cloudPeople&&cloudPeople.length){
-            window.azsPeople=cloudPeople;
-            try{localStorage.setItem(window.AZS_STORE_KEY||'azsPeople',JSON.stringify(cloudPeople))}catch(_){}
-            document.dispatchEvent(new CustomEvent('azs:people-updated'));
-          }
-        }
+ async function hydrate(){
+   let layout={};
+   try{layout=JSON.parse(localStorage.getItem(STORAGE)||'{}')||{}}catch(_){}
+   apply(layout);
 
-        /* Layout da árvore: leitura pública, inclusive após logout. */
-        const snap=await db.collection('arquivo').doc('layout-arvore').get();
-        if(snap.exists&&snap.data().layout){
-          const cloud=snap.data().layout;
-          try{localStorage.setItem(STORAGE,JSON.stringify(cloud))}catch(_){}
-          /* Aguarda eventuais re-renderizações dos cards e reaplica. */
-          setTimeout(()=>apply(cloud),50);
-          setTimeout(()=>apply(cloud),400);
-          setTimeout(()=>apply(cloud),1000);
-        }
-      }
-    }catch(e){console.error('Falha ao carregar árvore pública:',e)}
-  }
+   try{
+     if(window.firebase&&firebase.firestore){
+       const db=firebase.firestore();
 
-  /* Substitui o comportamento do botão de sair: salva primeiro, depois desloga. */
-  function fixExit(){
-    const b=document.getElementById('azsAdminExitBtn');
-    if(!b)return setTimeout(fixExit,100);
+       // Primeiro pega os dados familiares publicados.
+       const f=await db.collection('arquivo').doc('familia').get();
+       if(f.exists&&Array.isArray(f.data().people)){
+         window.azsPeople=f.data().people;
+         try{localStorage.setItem(window.AZS_STORE_KEY||'azevedo_santos_archive_v2',JSON.stringify(window.azsPeople))}catch(_){}
+         document.dispatchEvent(new CustomEvent('azs:people-updated'));
+       }
 
-    const clone=b.cloneNode(true);
-    b.parentNode.replaceChild(clone,b);
+       // Depois pega exatamente quais cards pertencem à árvore e suas posições.
+       const l=await db.collection('arquivo').doc('layout-arvore').get();
+       if(l.exists&&l.data().layout){
+         layout=l.data().layout;
+         try{localStorage.setItem(STORAGE,JSON.stringify(layout))}catch(_){}
+       }
+       apply(layout);
+       setTimeout(()=>apply(layout),250);
+       setTimeout(()=>apply(layout),900);
+     }
+   }catch(e){
+     console.error('Árvore pública:',e);
+     apply(layout);
+   }
+ }
 
-    clone.addEventListener('click',async function(e){
-      e.preventDefault();e.stopPropagation();
+ // Se os dados familiares forem atualizados em tempo real, reidrata os cards.
+ document.addEventListener('azs:people-updated',()=>{
+   let l={};try{l=JSON.parse(localStorage.getItem(STORAGE)||'{}')||{}}catch(_){}
+   setTimeout(()=>apply(l),0);
+ });
 
-      /* Dispara o botão real de salvar do editor, se existir. */
-      const save=document.getElementById('azsEdSave');
-      if(save){
-        save.click();
-        /* Dá tempo para a gravação no Firestore concluir antes do signOut. */
-        await new Promise(r=>setTimeout(r,1400));
-      }
-
-      document.body.classList.remove('azs-genealogy-edit','azs-exact-picking','azs-admin-open');
-      try{
-        if(window.firebase&&firebase.auth)await firebase.auth().signOut();
-      }catch(err){console.error('Erro ao sair:',err)}
-      document.body.classList.remove('azs-is-admin');
-      location.reload();
-    },true);
-  }
-
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{fixExit();setTimeout(publicLoad,500)});
-  }else{
-    fixExit();setTimeout(publicLoad,500);
-  }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(hydrate,500));
+ else setTimeout(hydrate,500);
 })();
 </script>
 
