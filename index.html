@@ -383,6 +383,18 @@ body.azs-exact-picking .royal-person,
 body.azs-exact-picking .person{cursor:crosshair!important}
 </style>
 
+
+<style id="azsRemoveCircledOldControlsV14">
+#azxTreeTools > button[data-z="in"],
+#azxTreeTools > button[data-z="out"],
+#azxTreeTools > button:not(#azsExactHighlight):not(#azsExactFull):not([data-z="in"]):not([data-z="out"]) {
+  display:none!important;
+}
+/* garante que os controles corretos permaneçam */
+#azsExactLineageControls{display:flex!important}
+#azsExactHighlight,#azsExactFull{display:inline-block!important}
+</style>
+
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a><a href="#linha-do-tempo">TEMPO</a><a href="#memorial">MEMORIAL</a></div></div></nav>
