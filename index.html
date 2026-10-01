@@ -345,6 +345,44 @@ body.azs-lineage-active #azsShowFullTreeFinal{display:inline-block}
 }
 </style>
 
+
+<style id="azsLineageExactFixV12">
+/* Remove os dois controles duplicados/antigos mostrados na imagem */
+#azsLineageControls,
+#azsHighlightLineageFinal,
+#azsShowFullTreeFinal,
+#azsShowDescendants,
+.azs-lineage-mini {display:none!important}
+
+/* Novos dois botões, lado a lado */
+#azsExactLineageControls{
+ display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:10px 0 18px
+}
+#azsExactLineageControls button{
+ background:#111916;border:1px solid #b9924b;color:#ead5a2;
+ padding:9px 13px;font-size:10px;cursor:pointer
+}
+#azsExactLineageControls button:hover{background:#1b251f;border-color:#d2aa59}
+
+/* No modo linhagem, todos apagam... */
+body.azs-exact-lineage .royal-person,
+body.azs-exact-lineage .person{
+ opacity:.14!important;
+ filter:grayscale(.9)!important;
+ transition:opacity .28s,filter .28s,box-shadow .28s!important
+}
+/* ...e somente a pessoa escolhida + sua descendência ficam acesas */
+body.azs-exact-lineage .royal-person.azs-exact-keep,
+body.azs-exact-lineage .person.azs-exact-keep{
+ opacity:1!important;
+ filter:none!important;
+ outline:2px solid #d8ae57!important;
+ box-shadow:0 0 28px #d8ae5766!important
+}
+body.azs-exact-picking .royal-person,
+body.azs-exact-picking .person{cursor:crosshair!important}
+</style>
+
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a><a href="#linha-do-tempo">TEMPO</a><a href="#memorial">MEMORIAL</a></div></div></nav>
@@ -1814,6 +1852,79 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
    const box=document.getElementById('azsCityInfo');
    if(box)box.innerHTML='<b>'+city.replace(', ','/')+'</b><p>'+(people.length?'Família ligada ao local: '+people.map(p=>p.name).join(' · '):'Nenhum familiar vinculado a esta cidade no cadastro atual.')+'</p>';
  },true);
+})();
+</script>
+
+
+<script id="azsLineageExactControllerV12">
+(function(){
+ function people(){return window.azsPeople||[]}
+ function cards(){return [...document.querySelectorAll('.royal-person[data-id],.person[data-id]')]}
+ function setup(){
+   const tools=document.getElementById('azxTreeTools');
+   if(!tools)return setTimeout(setup,120);
+
+   /* limpa controles antigos conflitantes */
+   document.getElementById('azsLineageControls')?.remove();
+   document.getElementById('azsHighlightLineageFinal')?.remove();
+   document.getElementById('azsShowFullTreeFinal')?.remove();
+
+   if(document.getElementById('azsExactLineageControls'))return;
+   const box=document.createElement('div');
+   box.id='azsExactLineageControls';
+   box.innerHTML=
+    '<button type="button" id="azsExactHighlight">DESTACAR LINHAGEM NA ÁRVORE</button>'+
+    '<button type="button" id="azsExactFull">MOSTRAR ÁRVORE GERAL</button>';
+   tools.appendChild(box);
+
+   document.getElementById('azsExactHighlight').onclick=function(){
+     document.body.classList.remove('azs-exact-lineage');
+     cards().forEach(c=>c.classList.remove('azs-exact-keep'));
+     document.body.classList.add('azs-exact-picking');
+     this.textContent='CLIQUE EM UMA PESSOA NA ÁRVORE';
+   };
+   document.getElementById('azsExactFull').onclick=clear;
+ }
+ function descendants(root,all,set){
+   if(!root||set.has(root.id))return;
+   set.add(root.id);
+   all.filter(x=>x.father===root.name||x.mother===root.name)
+      .forEach(x=>descendants(x,all,set));
+ }
+ function highlight(id){
+   const all=people(),root=all.find(x=>x.id===id);
+   if(!root)return;
+   const keep=new Set();
+   descendants(root,all,keep);
+
+   document.body.classList.remove('azs-exact-picking');
+   document.body.classList.add('azs-exact-lineage');
+   cards().forEach(c=>c.classList.toggle('azs-exact-keep',keep.has(c.dataset.id)));
+
+   const b=document.getElementById('azsExactHighlight');
+   if(b)b.textContent='DESTACAR LINHAGEM NA ÁRVORE';
+ }
+ function clear(){
+   document.body.classList.remove('azs-exact-picking','azs-exact-lineage');
+   cards().forEach(c=>c.classList.remove('azs-exact-keep'));
+   const b=document.getElementById('azsExactHighlight');
+   if(b)b.textContent='DESTACAR LINHAGEM NA ÁRVORE';
+ }
+
+ /* Durante a escolha, clicar no nome/card NÃO abre a ficha:
+    o clique serve exclusivamente para destacar aquela descendência. */
+ document.addEventListener('click',function(e){
+   if(!document.body.classList.contains('azs-exact-picking'))return;
+   const card=e.target.closest('.royal-person[data-id],.person[data-id]');
+   if(!card)return;
+   e.preventDefault();
+   e.stopPropagation();
+   e.stopImmediatePropagation();
+   highlight(card.dataset.id);
+ },true);
+
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);
+ else setup();
 })();
 </script>
 
