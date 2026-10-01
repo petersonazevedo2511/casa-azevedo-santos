@@ -2244,4 +2244,187 @@ body.azs-exact-picking .royal-person{cursor:crosshair!important}
 })();
 </script>
 
+
+<style id="azsFullTreeDesignerV16">
+/* Painel completo de edição */
+#azsTreeDesigner{display:none;position:fixed;left:14px;right:14px;bottom:14px;z-index:10050;background:#0d1511f7;border:1px solid #b48b45;padding:10px;box-shadow:0 10px 35px #000c;color:#e7d09c;font:10px sans-serif;gap:8px;flex-wrap:wrap;align-items:center}
+body.azs-is-admin.azs-tree-designing #azsTreeDesigner{display:flex}
+#azsTreeDesigner button,#azsTreeDesigner select,#azsTreeDesigner input{background:#17201b;border:1px solid #98763c;color:#ead5a4;padding:7px 8px;font-size:9px}
+#azsTreeDesigner input[type=range]{width:105px;padding:0}
+#azsTreeDesigner .danger{border-color:#8e4038;color:#f0b3a8}
+body.azs-tree-designing .royal-person{cursor:grab!important;touch-action:none!important;user-select:none!important}
+body.azs-tree-designing .royal-person.azs-designer-selected{outline:3px solid #e2b85b!important;box-shadow:0 0 30px #e2b85b88!important}
+body.azs-tree-designing #azsDynamicLines path{pointer-events:stroke!important;cursor:pointer}
+body.azs-tree-designing #azsDynamicLines path.azs-line-selected{stroke:#e2b85b!important;stroke-width:5!important}
+#azsDynamicLines{pointer-events:none!important}
+body.azs-tree-designing #azsDynamicLines{pointer-events:auto!important}
+.azs-size-label{min-width:78px}
+</style>
+
+<div id="azsTreeDesigner">
+ <b>EDITOR DA LINHAGEM</b>
+ <button type="button" id="azsDAdd">+ CARD</button>
+ <button type="button" id="azsDDelete" class="danger">EXCLUIR</button>
+ <span class="azs-size-label">Card</span><input id="azsDCardSize" type="range" min="60" max="260" value="180">
+ <span class="azs-size-label">Nome</span><input id="azsDFontSize" type="range" min="7" max="24" value="14">
+ <select id="azsDRelation"><option value="father">PAI → FILHO</option><option value="mother">MÃE → FILHO</option><option value="spouse">CÔNJUGES</option></select>
+ <button type="button" id="azsDConnect">CRIAR LINHA</button>
+ <button type="button" id="azsDDeleteLine" class="danger">APAGAR LINHA</button>
+ <button type="button" id="azsDSave">SALVAR TUDO</button>
+ <button type="button" id="azsDExit">SAIR</button>
+ <span id="azsDHint">Clique num card para selecioná-lo. Arraste para mover.</span>
+</div>
+
+<script id="azsFullTreeDesignerControllerV16">
+(function(){
+ const KEY='azsTreeDesignerV2';
+ let state={cards:{},manualLines:[]},selected=null,drag=null,connectMode=false,first=null,selectedLine=null;
+ const T=()=>document.getElementById('tree');
+ const P=()=>window.azsPeople||[];
+ const cards=()=>T()?[...T().querySelectorAll('.royal-person[id]')]:[];
+ const hint=t=>{const h=document.getElementById('azsDHint');if(h)h.textContent=t};
+
+ function pos(el){return{x:parseFloat(el.style.left)||el.offsetLeft,y:parseFloat(el.style.top)||el.offsetTop}}
+ function applyCard(el){
+   const s=state.cards[el.id]||{};
+   if(s.x!=null)el.style.left=s.x+'px';
+   if(s.y!=null)el.style.top=s.y+'px';
+   if(s.w)el.style.width=s.w+'px';
+   const strong=el.querySelector('strong');
+   if(strong&&s.font)strong.style.fontSize=s.font+'px';
+ }
+ function capture(){
+   cards().forEach(el=>{
+     const s=state.cards[el.id]||{};
+     const p=pos(el);s.x=p.x;s.y=p.y;
+     s.w=parseFloat(el.style.width)||el.offsetWidth;
+     const st=el.querySelector('strong');
+     s.font=st?parseFloat(getComputedStyle(st).fontSize):14;
+     state.cards[el.id]=s;
+   });
+ }
+ function center(el){return{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight/2}}
+ function svg(){
+   let s=document.getElementById('azsDynamicLines');
+   if(!s&&T()){s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.id='azsDynamicLines';T().prepend(s)}
+   return s;
+ }
+ function path(a,b,type,key){
+   const A=center(a),B=center(b),p=document.createElementNS('http://www.w3.org/2000/svg','path');
+   const mid=(A.y+B.y)/2;
+   p.setAttribute('d',type==='spouse'?`M${A.x} ${A.y} L${B.x} ${B.y}`:`M${A.x} ${A.y} V${mid} H${B.x} V${B.y}`);
+   p.dataset.lineKey=key;p.dataset.type=type;
+   p.addEventListener('click',e=>{
+     if(!document.body.classList.contains('azs-tree-designing'))return;
+     e.stopPropagation();
+     document.querySelectorAll('#azsDynamicLines .azs-line-selected').forEach(x=>x.classList.remove('azs-line-selected'));
+     p.classList.add('azs-line-selected');selectedLine=key;hint('Linha selecionada. Use APAGAR LINHA para removê-la.');
+   });
+   return p;
+ }
+ function draw(){
+   const s=svg();if(!s)return;s.innerHTML='';
+   const byName=new Map(P().map(x=>[x.name,x]));
+   const done=new Set();
+   P().forEach(ch=>{
+     const ce=document.getElementById(ch.id);if(!ce)return;
+     [['father',ch.father],['mother',ch.mother]].forEach(([type,n])=>{
+       if(!n)return;const par=byName.get(n),pe=par&&document.getElementById(par.id);if(pe)s.appendChild(path(pe,ce,type,type+'|'+par.id+'|'+ch.id));
+     });
+     if(ch.spouse){
+       const sp=byName.get(ch.spouse),se=sp&&document.getElementById(sp.id),key=[ch.id,sp&&sp.id].sort().join('|');
+       if(se&&!done.has(key)){done.add(key);s.appendChild(path(ce,se,'spouse','spouse|'+key))}
+     }
+   });
+ }
+ function select(el){
+   cards().forEach(x=>x.classList.remove('azs-designer-selected'));selected=el;
+   if(el){el.classList.add('azs-designer-selected');const s=state.cards[el.id]||{};document.getElementById('azsDCardSize').value=s.w||el.offsetWidth;document.getElementById('azsDFontSize').value=s.font||parseFloat(getComputedStyle(el.querySelector('strong')).fontSize)||14}
+ }
+ function persistPeople(){
+   try{localStorage.setItem(window.AZS_STORE_KEY||'azsPeople',JSON.stringify(P()))}catch(e){}
+   if(window.azsCloudSave)window.azsCloudSave(P());
+   document.dispatchEvent(new CustomEvent('azs:people-updated'));
+ }
+ async function save(){
+   capture();localStorage.setItem(KEY,JSON.stringify(state));persistPeople();
+   try{
+     if(window.firebase&&firebase.auth&&firebase.auth().currentUser&&firebase.firestore){
+       await firebase.firestore().collection('arquivo').doc('arvore-designer').set({state,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+       hint('Tudo salvo no Firebase.');
+     }else hint('Tudo salvo neste dispositivo.');
+   }catch(e){hint('Salvo localmente; Firebase indisponível.')}
+ }
+ async function load(){
+   try{state=JSON.parse(localStorage.getItem(KEY)||'{"cards":{},"manualLines":[]}')}catch(e){}
+   try{
+     if(window.firebase&&firebase.firestore){
+       const d=await firebase.firestore().collection('arquivo').doc('arvore-designer').get();
+       if(d.exists&&d.data().state){state=d.data().state;localStorage.setItem(KEY,JSON.stringify(state))}
+     }
+   }catch(e){}
+   cards().forEach(applyCard);if(Object.keys(state.cards||{}).length){document.body.classList.add('azs-custom-tree');draw()}
+ }
+ function connect(a,b,type){
+   const A=P().find(x=>x.id===a.id),B=P().find(x=>x.id===b.id);if(!A||!B)return;
+   if(type==='father'){B.father=A.name}
+   if(type==='mother'){B.mother=A.name}
+   if(type==='spouse'){A.spouse=B.name;B.spouse=A.name}
+   persistPeople();draw();hint('Linha criada. Clique SALVAR TUDO.');
+ }
+ function deleteLine(){
+   if(!selectedLine)return hint('Clique primeiro em uma linha.');
+   const [type,a,b]=selectedLine.split('|');
+   const A=P().find(x=>x.id===a),B=P().find(x=>x.id===b);
+   if(type==='father'&&B)B.father='';
+   if(type==='mother'&&B)B.mother='';
+   if(type==='spouse'){
+     if(A)A.spouse='';if(B)B.spouse='';
+   }
+   selectedLine=null;persistPeople();draw();hint('Linha removida.');
+ }
+ function setup(){
+   const entry=document.getElementById('azsTreeEditorEntry');if(!entry)return setTimeout(setup,100);
+   /* desativa o editor anterior e usa este editor completo */
+   entry.onclick=e=>{
+     e.preventDefault();e.stopPropagation();
+     if(!document.body.classList.contains('azs-is-admin'))return;
+     document.body.classList.remove('azs-tree-editing');
+     document.body.classList.add('azs-tree-designing','azs-custom-tree');
+     cards().forEach(applyCard);draw();hint('Editor ativo: arraste cards, ajuste tamanhos ou edite linhas.');
+     document.getElementById('lineage')?.scrollIntoView({behavior:'smooth'});
+   };
+   document.getElementById('azsDExit').onclick=()=>{document.body.classList.remove('azs-tree-designing');select(null)};
+   document.getElementById('azsDSave').onclick=save;
+   document.getElementById('azsDConnect').onclick=()=>{connectMode=true;first=null;hint('Clique na primeira pessoa e depois na segunda.')};
+   document.getElementById('azsDDeleteLine').onclick=deleteLine;
+   document.getElementById('azsDCardSize').oninput=e=>{if(selected){selected.style.width=e.target.value+'px';state.cards[selected.id]={...(state.cards[selected.id]||{}),w:+e.target.value};draw()}};
+   document.getElementById('azsDFontSize').oninput=e=>{if(selected){const n=selected.querySelector('strong');if(n)n.style.fontSize=e.target.value+'px';state.cards[selected.id]={...(state.cards[selected.id]||{}),font:+e.target.value};draw()}};
+   /* mantém adicionar/excluir do editor anterior, agora também acessíveis aqui */
+   document.getElementById('azsDAdd').onclick=()=>document.getElementById('azsTreeAdd')?.click();
+   document.getElementById('azsDDelete').onclick=()=>{if(selected){const old=document.querySelector('.azs-tree-selected');old?.classList.remove('azs-tree-selected');selected.classList.add('azs-tree-selected');document.getElementById('azsTreeDelete')?.click();setTimeout(draw,30)}};
+ }
+ document.addEventListener('pointerdown',e=>{
+   if(!document.body.classList.contains('azs-tree-designing'))return;
+   const el=e.target.closest('.royal-person[id]');if(!el)return;
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+   if(connectMode){
+     if(!first){first=el;select(el);hint('Primeira pessoa escolhida. Clique na segunda.');return}
+     const a=first;first=null;connectMode=false;connect(a,el,document.getElementById('azsDRelation').value);select(el);return;
+   }
+   select(el);const p=pos(el);drag={el,id:e.pointerId,sx:e.clientX,sy:e.clientY,x:p.x,y:p.y};el.setPointerCapture?.(e.pointerId);
+ },true);
+ document.addEventListener('pointermove',e=>{
+   if(!drag||e.pointerId!==drag.id)return;
+   drag.el.style.left=(drag.x+e.clientX-drag.sx)+'px';drag.el.style.top=(drag.y+e.clientY-drag.sy)+'px';
+   state.cards[drag.el.id]={...(state.cards[drag.el.id]||{}),...pos(drag.el)};draw();
+ },true);
+ document.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.id)drag=null},true);
+ document.addEventListener('click',e=>{
+   if(document.body.classList.contains('azs-tree-designing')&&e.target.closest('.royal-person[id]')){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}
+ },true);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setup();setTimeout(load,550)});else{setup();setTimeout(load,550)}
+})();
+</script>
+
 </body></html>
