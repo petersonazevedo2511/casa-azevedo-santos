@@ -474,7 +474,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElement
 <div class="azs-panel" id="azsAdmin">
  <div class="azs-card">
   <div class="azs-head"><div><div class="azs-small">CASA AZEVEDO MELO</div><h2>Painel do Arquivo</h2></div><button class="azs-x" id="azsAdminClose">×</button></div>
-  <div class="azs-note">Este painel já funciona neste navegador. As alterações são salvas localmente. A sincronização segura entre aparelhos entra quando o banco de dados for conectado.</div>
+  <div class="azs-note">Painel administrativo protegido. Somente o administrador autenticado pode alterar o Arquivo Familiar.</div>
   <div class="azs-tabs">
    <button class="active" data-pane="people">PESSOAS</button>
    <button data-pane="edit">ADICIONAR / EDITAR</button>
@@ -568,7 +568,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElement
    const live=window.azsPeople||[];
    return live.find(x=>x.id===id)||live.find(x=>x.name===name)||null;
  };
- const save=()=>{localStorage.setItem(STORE,JSON.stringify(people));window.azsPeople=people;document.dispatchEvent(new CustomEvent('azs:people-updated'));};
+ const save=()=>{localStorage.setItem(STORE,JSON.stringify(people));window.azsPeople=people;document.dispatchEvent(new CustomEvent('azs:people-updated'));if(window.azsCloudSave)window.azsCloudSave(people);};
  const $=id=>document.getElementById(id);
  const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
  function list(){
@@ -640,7 +640,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElement
    <div class="family-vault-item"><b>Retratos</b><span>Acervo fotográfico será incluído quando as imagens forem fornecidas.</span></div>
    <div class="family-vault-item"><b>Administração</b><span>Use “Administrar Arquivo” para cadastrar e editar registros neste navegador.</span></div>
   </div>
-  <div class="family-vault-note">Os registros cadastrados pelo painel administrativo ficam salvos neste navegador. A sincronização entre aparelhos será ativada quando o banco de dados for conectado.</div>
+  <div class="family-vault-note">Os registros do Arquivo Familiar são compartilhados com a família em modo de leitura. Somente o administrador autenticado pode alterá-los.</div>
  </div>
 </div>
 
@@ -792,5 +792,126 @@ document.addEventListener('DOMContentLoaded',function(){
  document.addEventListener('azs:people-updated',syncOpenProfile);
 })();
 </script>
+
+
+<!-- AZS_FIREBASE_ADMIN_V1 -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<style id="azsFirebaseAdminStyle">
+.azs-login{position:fixed;inset:0;z-index:300;background:#050907ef;display:none;align-items:center;justify-content:center;padding:18px}
+.azs-login.open{display:flex}.azs-login-card{width:min(410px,100%);background:#121916;border:1px solid #a98747;padding:24px;color:#ddd1b5;box-shadow:0 30px 100px #000}
+.azs-login-card h3{margin:4px 0 16px;color:#ead49b;font:26px Georgia,serif}.azs-login-card input{width:100%;box-sizing:border-box;margin:5px 0 10px;padding:11px;background:#09100d;border:1px solid #a9874766;color:#fff}
+.azs-login-actions{display:flex;gap:8px;flex-wrap:wrap}.azs-auth-status{font-size:10px;color:#b8ad96;margin-top:10px;min-height:16px}
+#azsLogout{display:none}
+body:not(.azs-is-admin) #saveDocRef{display:none!important}
+</style>
+<div class="azs-login" id="azsLogin">
+ <div class="azs-login-card">
+  <div style="font-size:9px;letter-spacing:.16em;color:#a99f8b">CASA AZEVEDO MELO</div>
+  <h3>Acesso do Administrador</h3>
+  <form id="azsLoginForm">
+   <label>E-mail<input id="azsLoginEmail" type="email" autocomplete="username" required></label>
+   <label>Senha<input id="azsLoginPassword" type="password" autocomplete="current-password" required></label>
+   <div class="azs-login-actions">
+    <button class="azs-btn" type="submit">ENTRAR</button>
+    <button class="azs-btn" type="button" id="azsLoginCancel">CANCELAR</button>
+   </div>
+   <div class="azs-auth-status" id="azsLoginStatus"></div>
+  </form>
+ </div>
+</div>
+<script>
+(function(){
+ const config={
+  apiKey:"AIzaSyDSTelDZDV5ArIAh1FpXY8DKBh3uU-oFGc",
+  authDomain:"casa-azevedo-melo.firebaseapp.com",
+  projectId:"casa-azevedo-melo",
+  storageBucket:"casa-azevedo-melo.firebasestorage.app",
+  messagingSenderId:"23965190701",
+  appId:"1:23965190701:web:4856cd3126faaeb47d06a4"
+ };
+ try{
+   if(!firebase.apps.length) firebase.initializeApp(config);
+ }catch(e){ console.error("Firebase init:",e); return; }
+ const auth=firebase.auth(), db=firebase.firestore();
+ const ref=db.collection("arquivo").doc("familia");
+ const login=document.getElementById("azsLogin");
+ const panel=document.getElementById("azsAdmin");
+ const openBtn=document.getElementById("azsAdminOpen");
+ const status=document.getElementById("azsLoginStatus");
+ let admin=false;
+
+ window.azsCloudSave=async function(people){
+   if(!auth.currentUser){ alert("Faça login como administrador para alterar o arquivo."); return; }
+   try{
+     await ref.set({people:people,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+   }catch(e){
+     console.error(e); alert("Não foi possível salvar no Arquivo Familiar. Verifique sua conexão.");
+   }
+ };
+
+ async function loadCloud(){
+   try{
+     const snap=await ref.get();
+     if(snap.exists && Array.isArray(snap.data().people)){
+       const cloud=snap.data().people;
+       const local=JSON.parse(localStorage.getItem(window.AZS_STORE_KEY)||"null");
+       if(JSON.stringify(local)!==JSON.stringify(cloud)){
+         localStorage.setItem(window.AZS_STORE_KEY,JSON.stringify(cloud));
+         if(!sessionStorage.getItem("azsCloudReload")){
+           sessionStorage.setItem("azsCloudReload","1");
+           location.reload(); return;
+         }
+       }
+     } else if(auth.currentUser && Array.isArray(window.azsPeople)){
+       await ref.set({people:window.azsPeople,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+     }
+     sessionStorage.removeItem("azsCloudReload");
+   }catch(e){ console.error("Firestore:",e); }
+ }
+
+ if(openBtn) openBtn.onclick=function(){
+   if(admin){ panel.classList.add("open"); return; }
+   status.textContent="";
+   login.classList.add("open");
+   setTimeout(()=>document.getElementById("azsLoginEmail")?.focus(),100);
+ };
+
+ document.getElementById("azsLoginCancel").onclick=()=>login.classList.remove("open");
+ login.addEventListener("click",e=>{if(e.target===login)login.classList.remove("open")});
+ document.getElementById("azsLoginForm").onsubmit=async function(e){
+   e.preventDefault(); status.textContent="Entrando...";
+   try{
+     await auth.signInWithEmailAndPassword(
+       document.getElementById("azsLoginEmail").value.trim(),
+       document.getElementById("azsLoginPassword").value
+     );
+     login.classList.remove("open");
+     panel.classList.add("open");
+   }catch(err){ status.textContent="E-mail ou senha incorretos."; }
+ };
+
+ auth.onAuthStateChanged(async user=>{
+   admin=!!user;
+   document.body.classList.toggle("azs-is-admin",admin);
+   if(openBtn) openBtn.textContent=admin?"⚜ ADMINISTRAR ARQUIVO":"⚜ ACESSO DO ADMINISTRADOR";
+   await loadCloud();
+ });
+
+ // Everyone can receive published family data in real time; Firestore rules block writes for visitors.
+ ref.onSnapshot(snap=>{
+   if(!snap.exists || !Array.isArray(snap.data().people)) return;
+   const cloud=snap.data().people;
+   const current=localStorage.getItem(window.AZS_STORE_KEY);
+   if(current!==JSON.stringify(cloud)){
+     localStorage.setItem(window.AZS_STORE_KEY,JSON.stringify(cloud));
+     window.azsPeople=cloud;
+     document.dispatchEvent(new CustomEvent("azs:people-updated"));
+   }
+ },err=>console.error("Firestore realtime:",err));
+})();
+</script>
+<!-- /AZS_FIREBASE_ADMIN_V1 -->
 
 </body></html>
