@@ -278,6 +278,70 @@ body.azs-is-admin #azsBookAdminTools{display:flex}
  .azs-map-hotspot{display:none}.azs-origin-list{justify-content:flex-start}
 }
 </style>
+
+<style id="azsLineageFinalV9">
+/* controles antigos definitivamente removidos */
+#azxTreeTools [data-z="reset"],#azxDescMode{display:none!important}
+
+/* novos controles */
+#azsLineageControls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:10px 0 18px}
+#azsLineageControls button{background:#121a16;border:1px solid #b58d46;color:#e1cb99;padding:9px 13px;font-size:10px;cursor:pointer}
+#azsLineageControls button:hover{background:#1b261f;border-color:#d0a653}
+#azsShowFullTreeFinal{display:none}
+
+/* modo seleção: clique em qualquer card não abre ficha */
+body.azs-lineage-pick .royal-person,body.azs-lineage-pick .person{cursor:crosshair!important}
+
+/* modo linhagem: restante apagado */
+body.azs-lineage-active .royal-person,body.azs-lineage-active .person{
+ opacity:.17!important;filter:grayscale(.85)!important;transition:.28s!important;
+}
+body.azs-lineage-active .royal-person.azs-lineage-keep,
+body.azs-lineage-active .person.azs-lineage-keep{
+ opacity:1!important;filter:none!important;outline:2px solid #d8ae57!important;
+ box-shadow:0 0 28px #d8ae5766!important;
+}
+body.azs-lineage-active #azsHighlightLineageFinal{display:none}
+body.azs-lineage-active #azsShowFullTreeFinal{display:inline-block}
+</style>
+
+<style id="azsBrazilOriginsV10">
+.azs-brasil-modal{display:none;position:fixed;inset:0;z-index:10020;background:#070b08e8;padding:4vh 3vw;overflow:auto}
+.azs-brasil-modal.open{display:block}
+.azs-brasil-sheet{position:relative;max-width:1050px;margin:auto;background:#c8a96f;
+ background-image:radial-gradient(#6c482520 1px,transparent 1px),linear-gradient(110deg,#d9bd83,#aa8148);
+ background-size:7px 7px,100% 100%;border:8px double #5e3c18;box-shadow:0 20px 70px #000;min-height:650px;padding:34px;color:#3d2915}
+.azs-brasil-sheet:before{content:"";position:absolute;inset:12px;border:1px solid #68451f88;pointer-events:none}
+.azs-brasil-title{text-align:center;font:32px Georgia,serif;letter-spacing:.08em;margin:0 0 5px}
+.azs-brasil-sub{text-align:center;font:11px Georgia,serif;letter-spacing:.18em;margin-bottom:28px}
+.azs-brasil-close{position:absolute;right:18px;top:15px;background:#3c2514;color:#e3c889;border:1px solid #79552d;width:34px;height:34px;cursor:pointer;font-size:20px}
+.azs-brasil-map{position:relative;max-width:760px;height:500px;margin:auto;border:1px solid #75522666;background:#c9aa70aa;overflow:hidden}
+.azs-brasil-map svg{position:absolute;inset:0;width:100%;height:100%;opacity:.72}
+.azs-city{position:absolute;transform:translate(-50%,-50%);background:#5a351b;color:#f0d59a;border:1px solid #3c2413;padding:7px 10px;font:11px Georgia,serif;cursor:pointer;box-shadow:0 3px 9px #4a2b1d55}
+.azs-city:before{content:"";position:absolute;width:8px;height:8px;border-radius:50%;background:#8d1818;border:2px solid #f0d59a;left:-8px;top:50%;transform:translateY(-50%)}
+.azs-city:hover{background:#7b4c27}
+.azs-city-info{position:absolute;left:20px;right:20px;bottom:18px;background:#ead3a5e8;border:1px solid #765129;padding:13px 16px;min-height:58px}
+.azs-city-info b{font:18px Georgia,serif}.azs-city-info p{margin:5px 0 0;font:11px Georgia,serif}
+@media(max-width:650px){.azs-brasil-sheet{padding:24px 12px;min-height:600px}.azs-brasil-map{height:470px}.azs-city{font-size:9px;padding:6px}.azs-brasil-title{font-size:25px}}
+</style>
+
+<style id="azsMapTopStripFinalFix">
+/* Oculta somente a barra desenhada dentro da imagem do atlas */
+.azs-origin-atlas{--atlas-top-crop:7.7%}
+.azs-origin-atlas>img{
+  top:calc(-1 * var(--atlas-top-crop))!important;
+  height:calc(100% + var(--atlas-top-crop))!important;
+  object-fit:cover!important;
+  object-position:center top!important;
+}
+@media(max-width:700px){
+ .azs-origin-atlas>img{
+   top:0!important;
+   height:108.5%!important;
+   transform:translate(-50%,-7.7%)!important;
+ }
+}
+</style>
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a><a href="#linha-do-tempo">TEMPO</a><a href="#memorial">MEMORIAL</a></div></div></nav>
@@ -1604,9 +1668,9 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
   {id:'brasil',name:'Brasil',x:34,y:57,desc:'Terra de nascimento e residência de diferentes gerações da família.',match:['Brasil','Paraná','Maringá','Paiçandu','Araçatuba','Cianorte','SP','PR']},
   {id:'espanha',name:'Espanha',x:51,y:22,desc:'Lugar ligado à trajetória internacional de membros da família.',manual:['Regiane dos Santos Sobral']},
   {id:'japao',name:'Japão',x:85,y:39,desc:'Lugar ligado à trajetória internacional da família. No mapa, a região é marcada pelas cerejeiras desenhadas em estilo de lápis.',manual:['Regina dos Santos']},
-  {id:'portugal',name:'Portugal',x:42,y:31,desc:'Referência histórica de origem ibérica preservada no atlas familiar.',manual:[]},
-  {id:'italia',name:'Itália',x:57,y:33,desc:'Referência europeia apresentada no atlas das origens.',manual:[]},
-  {id:'africa',name:'África',x:50,y:52,desc:'Referência ancestral e geográfica apresentada no atlas familiar.',manual:[]}
+  
+  
+  
  ];
  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
  function familyAt(place){
@@ -1634,6 +1698,111 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(render,250));else setTimeout(render,250);
  document.addEventListener('azs:people-updated',()=>setTimeout(render,100));
+})();
+</script>
+
+<script id="azsLineageFinalControllerV9">
+(function(){
+ function all(){return window.azsPeople||[]}
+ function cards(){return document.querySelectorAll('.royal-person[data-id],.person[data-id]')}
+ function setup(){
+   const old=document.getElementById('azxTreeTools');
+   if(!old)return setTimeout(setup,120);
+
+   old.querySelector('[data-z="reset"]')?.remove();
+   document.getElementById('azxDescMode')?.remove();
+
+   if(document.getElementById('azsLineageControls'))return;
+   const box=document.createElement('div');box.id='azsLineageControls';
+   box.innerHTML='<button type="button" id="azsHighlightLineageFinal">DESTACAR LINHAGEM NA ÁRVORE</button><button type="button" id="azsShowFullTreeFinal">MOSTRAR ÁRVORE COMPLETA</button>';
+   old.insertAdjacentElement('afterend',box);
+
+   document.getElementById('azsHighlightLineageFinal').onclick=function(){
+     document.body.classList.remove('azs-lineage-active');
+     cards().forEach(c=>c.classList.remove('azs-lineage-keep'));
+     document.body.classList.add('azs-lineage-pick');
+     this.textContent='CLIQUE EM UMA PESSOA NA ÁRVORE';
+   };
+   document.getElementById('azsShowFullTreeFinal').onclick=clear;
+ }
+ function descend(p,people,set){
+   if(!p||set.has(p.id))return;
+   set.add(p.id);
+   people.filter(x=>x.father===p.name||x.mother===p.name).forEach(x=>descend(x,people,set));
+ }
+ function includeSpouses(set,people){
+   let changed=true;
+   while(changed){changed=false;people.forEach(p=>{
+     if(set.has(p.id)&&p.spouse){
+       const s=people.find(x=>x.name===p.spouse);
+       if(s&&!set.has(s.id)){set.add(s.id);changed=true}
+     }
+   })}
+ }
+ function select(id){
+   const people=all(),root=people.find(x=>x.id===id);if(!root)return;
+   const keep=new Set();descend(root,people,keep);includeSpouses(keep,people);
+   document.body.classList.remove('azs-lineage-pick');
+   document.body.classList.add('azs-lineage-active');
+   cards().forEach(c=>c.classList.toggle('azs-lineage-keep',keep.has(c.dataset.id)));
+   const b=document.getElementById('azsHighlightLineageFinal');if(b)b.textContent='DESTACAR LINHAGEM NA ÁRVORE';
+ }
+ function clear(){
+   document.body.classList.remove('azs-lineage-active','azs-lineage-pick');
+   cards().forEach(c=>c.classList.remove('azs-lineage-keep'));
+   const b=document.getElementById('azsHighlightLineageFinal');if(b)b.textContent='DESTACAR LINHAGEM NA ÁRVORE';
+ }
+ /* CAPTURE: no modo de seleção o clique é interceptado ANTES do código que abre a ficha */
+ document.addEventListener('click',function(e){
+   if(!document.body.classList.contains('azs-lineage-pick'))return;
+   const card=e.target.closest('.royal-person[data-id],.person[data-id]');
+   if(!card)return;
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+   select(card.dataset.id);
+ },true);
+
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
+})();
+</script>
+<div class="azs-brasil-modal" id="azsBrasilOrigins">
+<div class="azs-brasil-sheet">
+<button class="azs-brasil-close" id="azsBrasilClose">×</button>
+<h2 class="azs-brasil-title">BRASIL · CAMINHOS DA FAMÍLIA</h2>
+<div class="azs-brasil-sub">CIDADES EFETIVAMENTE REGISTRADAS NA ÁRVORE GENEALÓGICA</div>
+<div class="azs-brasil-map">
+<svg viewBox="0 0 760 500" aria-hidden="true">
+<path d="M355 35 L455 65 540 130 575 205 535 270 500 310 485 370 440 445 390 470 345 420 315 365 270 335 225 275 205 215 240 155 285 115 300 65Z" fill="#a57d43" stroke="#68451f" stroke-width="3"/>
+<path d="M245 165 Q350 225 455 340" fill="none" stroke="#8b2920" stroke-width="2" stroke-dasharray="7 6"/>
+</svg>
+<button class="azs-city" style="left:58%;top:72%" data-city="Maringá, PR">Maringá/PR</button>
+<button class="azs-city" style="left:55%;top:76%" data-city="Paiçandu, PR">Paiçandu/PR</button>
+<button class="azs-city" style="left:62%;top:66%" data-city="Araçatuba, SP">Araçatuba/SP</button>
+<button class="azs-city" style="left:51%;top:68%" data-city="Cianorte, PR">Cianorte/PR</button>
+<div class="azs-city-info" id="azsCityInfo"><b>Brasil</b><p>Selecione uma cidade para ver quais familiares estão ligados a ela.</p></div>
+</div></div></div>
+
+<script id="azsBrazilOriginsControllerV10">
+(function(){
+ const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ function setup(){
+  const modal=document.getElementById('azsBrasilOrigins'),close=document.getElementById('azsBrasilClose');
+  if(!modal)return;
+  close.onclick=()=>modal.classList.remove('open');
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
+  document.addEventListener('click',e=>{
+    const trigger=e.target.closest('[data-place="brasil"],[data-origin="brasil"]');
+    if(trigger){e.preventDefault();e.stopPropagation();modal.classList.add('open')}
+    const city=e.target.closest('.azs-city');
+    if(city){
+      const q=norm(city.dataset.city), base=q.split(',')[0], people=(window.azsPeople||[]).filter(p=>{
+       const h=norm([p.place,p.birthplace,p.location,p.bio].filter(Boolean).join(' '));
+       return h.includes(base);
+      });
+      document.getElementById('azsCityInfo').innerHTML='<b>'+city.dataset.city+'</b><p>'+(people.length?'Família ligada ao local: '+people.map(p=>p.name).join(' · '):'Nenhum familiar vinculado a esta cidade no cadastro atual.')+'</p>';
+    }
+  },true);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup);else setup();
 })();
 </script>
 </body></html>
