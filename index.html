@@ -2427,4 +2427,109 @@ body.azs-tree-designing #azsDynamicLines{pointer-events:auto!important}
 })();
 </script>
 
+
+<style id="azsDragDefinitiveFixV17">
+body.azs-tree-designing #tree .royal-person{
+  position:absolute!important;
+  cursor:move!important;
+  pointer-events:auto!important;
+  touch-action:none!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  z-index:50!important;
+}
+body.azs-tree-designing #tree .royal-person *{pointer-events:none!important}
+body.azs-tree-designing #viewport,
+body.azs-tree-designing #stage,
+body.azs-tree-designing #tree{touch-action:none!important}
+body.azs-tree-designing .royal-person.azs-drag-now{
+  z-index:90!important;
+  outline:3px solid #e6bb5c!important;
+  box-shadow:0 0 32px #e6bb5c99!important
+}
+</style>
+
+<script id="azsDragDefinitiveControllerV17">
+(function(){
+ let D=null;
+ const tree=()=>document.getElementById('tree');
+
+ function scale(){
+   const t=tree(); if(!t)return 1;
+   const r=t.getBoundingClientRect();
+   /* offsetWidth é o tamanho lógico antes do transform */
+   return t.offsetWidth ? r.width/t.offsetWidth : 1;
+ }
+ function start(e){
+   if(!document.body.classList.contains('azs-tree-designing'))return;
+   const card=e.target.closest('#tree .royal-person[id]');
+   if(!card)return;
+
+   /* Se o editor está aguardando conexão, deixa o controlador de conexão trabalhar. */
+   const hint=document.getElementById('azsDHint');
+   if(hint && /primeira pessoa|segunda/i.test(hint.textContent||''))return;
+
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+
+   const x=parseFloat(card.style.left);
+   const y=parseFloat(card.style.top);
+   D={
+     card,
+     sx:e.clientX, sy:e.clientY,
+     x:Number.isFinite(x)?x:card.offsetLeft,
+     y:Number.isFinite(y)?y:card.offsetTop,
+     moved:false,
+     pid:e.pointerId
+   };
+   card.classList.add('azs-drag-now','azs-designer-selected');
+   try{card.setPointerCapture(e.pointerId)}catch(_){}
+ }
+ function move(e){
+   if(!D || e.pointerId!==D.pid)return;
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+   const s=scale()||1;
+   const dx=(e.clientX-D.sx)/s,dy=(e.clientY-D.sy)/s;
+   if(Math.abs(dx)>2||Math.abs(dy)>2)D.moved=true;
+   D.card.style.left=(D.x+dx)+'px';
+   D.card.style.top=(D.y+dy)+'px';
+
+   /* redesenha imediatamente as conexões */
+   const ev=new Event('resize');window.dispatchEvent(ev);
+ }
+ function end(e){
+   if(!D || e.pointerId!==D.pid)return;
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+   const c=D.card;
+   c.classList.remove('azs-drag-now');
+   try{c.releasePointerCapture(e.pointerId)}catch(_){}
+   D=null;
+
+   /* força o editor existente a capturar a nova posição no SALVAR TUDO */
+   const save=document.getElementById('azsDSave');
+   if(save)save.dataset.positionsChanged='1';
+ }
+ /* listeners registrados por último + capture para vencer pan/abertura antigos */
+ document.addEventListener('pointerdown',start,true);
+ document.addEventListener('pointermove',move,true);
+ document.addEventListener('pointerup',end,true);
+ document.addEventListener('pointercancel',end,true);
+
+ /* mouse fallback para navegadores que tratam pointer capture de forma diferente */
+ let M=null;
+ document.addEventListener('mousedown',function(e){
+   if(window.PointerEvent)return;
+   if(!document.body.classList.contains('azs-tree-designing'))return;
+   const c=e.target.closest('#tree .royal-person[id]');if(!c)return;
+   e.preventDefault();e.stopPropagation();
+   M={c,sx:e.clientX,sy:e.clientY,x:parseFloat(c.style.left)||c.offsetLeft,y:parseFloat(c.style.top)||c.offsetTop};
+ },true);
+ document.addEventListener('mousemove',function(e){
+   if(!M)return;const s=scale()||1;
+   M.c.style.left=(M.x+(e.clientX-M.sx)/s)+'px';
+   M.c.style.top=(M.y+(e.clientY-M.sy)/s)+'px';
+ },true);
+ document.addEventListener('mouseup',()=>M=null,true);
+})();
+</script>
+
 </body></html>
