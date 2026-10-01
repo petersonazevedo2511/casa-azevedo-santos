@@ -2503,4 +2503,98 @@ body.azs-exact-picking .royal-person{cursor:crosshair!important}
 })();
 </script>
 
+
+<script id="azsPublicTreePersistenceFix">
+(function(){
+  const STORAGE='azs_genealogy_editor_layout_v1';
+
+  function tree(){return document.getElementById('tree')}
+  function cards(){return tree()?[...tree().querySelectorAll('.royal-person[id]')]:[]}
+  function apply(layout){
+    if(!layout||typeof layout!=='object')return;
+    let used=false;
+    cards().forEach(el=>{
+      const d=layout[el.id]; if(!d)return;
+      if(Number.isFinite(+d.x))el.style.left=(+d.x)+'px';
+      if(Number.isFinite(+d.y))el.style.top=(+d.y)+'px';
+      if(Number.isFinite(+d.w))el.style.width=(+d.w)+'px';
+      const st=el.querySelector('strong');
+      if(st&&Number.isFinite(+d.font))st.style.fontSize=(+d.font)+'px';
+      used=true;
+    });
+    if(used)document.body.classList.add('azs-editor-layout');
+  }
+
+  async function publicLoad(){
+    let local={};
+    try{local=JSON.parse(localStorage.getItem(STORAGE)||'{}')||{}}catch(_){}
+    apply(local);
+
+    try{
+      if(window.firebase&&firebase.firestore){
+        const db=firebase.firestore();
+
+        /* Dados familiares: leitura é pública pelas regras já usadas no projeto. */
+        const fam=await db.collection('arquivo').doc('familia').get();
+        if(fam.exists){
+          const data=fam.data()||{};
+          const cloudPeople=Array.isArray(data.people)?data.people:
+                            Array.isArray(data)?data:null;
+          if(cloudPeople&&cloudPeople.length){
+            window.azsPeople=cloudPeople;
+            try{localStorage.setItem(window.AZS_STORE_KEY||'azsPeople',JSON.stringify(cloudPeople))}catch(_){}
+            document.dispatchEvent(new CustomEvent('azs:people-updated'));
+          }
+        }
+
+        /* Layout da árvore: leitura pública, inclusive após logout. */
+        const snap=await db.collection('arquivo').doc('layout-arvore').get();
+        if(snap.exists&&snap.data().layout){
+          const cloud=snap.data().layout;
+          try{localStorage.setItem(STORAGE,JSON.stringify(cloud))}catch(_){}
+          /* Aguarda eventuais re-renderizações dos cards e reaplica. */
+          setTimeout(()=>apply(cloud),50);
+          setTimeout(()=>apply(cloud),400);
+          setTimeout(()=>apply(cloud),1000);
+        }
+      }
+    }catch(e){console.error('Falha ao carregar árvore pública:',e)}
+  }
+
+  /* Substitui o comportamento do botão de sair: salva primeiro, depois desloga. */
+  function fixExit(){
+    const b=document.getElementById('azsAdminExitBtn');
+    if(!b)return setTimeout(fixExit,100);
+
+    const clone=b.cloneNode(true);
+    b.parentNode.replaceChild(clone,b);
+
+    clone.addEventListener('click',async function(e){
+      e.preventDefault();e.stopPropagation();
+
+      /* Dispara o botão real de salvar do editor, se existir. */
+      const save=document.getElementById('azsEdSave');
+      if(save){
+        save.click();
+        /* Dá tempo para a gravação no Firestore concluir antes do signOut. */
+        await new Promise(r=>setTimeout(r,1400));
+      }
+
+      document.body.classList.remove('azs-genealogy-edit','azs-exact-picking','azs-admin-open');
+      try{
+        if(window.firebase&&firebase.auth)await firebase.auth().signOut();
+      }catch(err){console.error('Erro ao sair:',err)}
+      document.body.classList.remove('azs-is-admin');
+      location.reload();
+    },true);
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{fixExit();setTimeout(publicLoad,500)});
+  }else{
+    fixExit();setTimeout(publicLoad,500);
+  }
+})();
+</script>
+
 </body></html>
