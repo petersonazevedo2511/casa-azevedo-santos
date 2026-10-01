@@ -1928,4 +1928,87 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
 })();
 </script>
 
+
+<style id="azsLineageFunctionalFixV13">
+body.azs-exact-lineage .royal-person{
+ opacity:.13!important;filter:grayscale(.9)!important;transition:.28s!important
+}
+body.azs-exact-lineage .royal-person.azs-exact-keep{
+ opacity:1!important;filter:none!important;outline:2px solid #d8ae57!important;
+ box-shadow:0 0 30px #d8ae5770!important
+}
+body.azs-exact-picking .royal-person{cursor:crosshair!important}
+</style>
+<script id="azsLineageFunctionalControllerV13">
+(function(){
+ const getPeople=()=>window.azsPeople||[];
+ const getCards=()=>[...document.querySelectorAll('.royal-person[id]')];
+
+ function descendants(person, people, keep){
+   if(!person || keep.has(person.id)) return;
+   keep.add(person.id);
+   people
+     .filter(p => p.father===person.name || p.mother===person.name)
+     .forEach(child => descendants(child,people,keep));
+ }
+
+ function highlight(id){
+   const people=getPeople();
+   const person=people.find(p=>p.id===id);
+   if(!person)return;
+   const keep=new Set();
+   descendants(person,people,keep);
+
+   document.body.classList.remove('azs-exact-picking');
+   document.body.classList.add('azs-exact-lineage');
+
+   getCards().forEach(card=>{
+     card.classList.toggle('azs-exact-keep',keep.has(card.id));
+   });
+
+   const b=document.getElementById('azsExactHighlight');
+   if(b)b.textContent='DESTACAR LINHAGEM NA ÁRVORE';
+ }
+
+ function general(){
+   document.body.classList.remove('azs-exact-picking','azs-exact-lineage');
+   getCards().forEach(card=>card.classList.remove('azs-exact-keep'));
+   const b=document.getElementById('azsExactHighlight');
+   if(b)b.textContent='DESTACAR LINHAGEM NA ÁRVORE';
+ }
+
+ function wire(){
+   const hi=document.getElementById('azsExactHighlight');
+   const full=document.getElementById('azsExactFull');
+   if(!hi||!full)return setTimeout(wire,100);
+
+   /* substitui handlers anteriores para não haver conflito */
+   hi.onclick=function(e){
+     e.preventDefault();e.stopPropagation();
+     general();
+     document.body.classList.add('azs-exact-picking');
+     hi.textContent='CLIQUE EM UMA PESSOA NA ÁRVORE';
+   };
+   full.onclick=function(e){
+     e.preventDefault();e.stopPropagation();
+     general();
+   };
+ }
+
+ /* captura o clique antes do código antigo que abre a ficha */
+ document.addEventListener('click',function(e){
+   if(!document.body.classList.contains('azs-exact-picking'))return;
+   const card=e.target.closest('.royal-person[id]');
+   if(!card)return;
+   e.preventDefault();
+   e.stopPropagation();
+   e.stopImmediatePropagation();
+   highlight(card.id);
+ },true);
+
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);
+ else wire();
+})();
+</script>
+
 </body></html>
