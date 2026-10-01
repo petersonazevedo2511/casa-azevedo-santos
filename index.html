@@ -395,6 +395,24 @@ body.azs-exact-picking .person{cursor:crosshair!important}
 #azsExactHighlight,#azsExactFull{display:inline-block!important}
 </style>
 
+
+<style id="azsVisualTreeEditorStyleV15">
+#azsTreeEditorBar{display:none;position:absolute;left:18px;top:18px;z-index:80;background:#0e1612f2;border:1px solid #b58d46;padding:9px;gap:7px;flex-wrap:wrap;max-width:calc(100% - 36px);box-shadow:0 8px 28px #0009}
+body.azs-is-admin #azsTreeEditorEntry{display:inline-block!important}
+#azsTreeEditorEntry{display:none;background:#141d18;border:1px solid #b58d46;color:#ead4a0;padding:9px 12px;font-size:10px;cursor:pointer}
+body.azs-tree-editing #azsTreeEditorBar{display:flex}
+#azsTreeEditorBar button,#azsTreeEditorBar select{background:#17211c;border:1px solid #9c793d;color:#ead4a0;padding:7px 9px;font-size:9px;cursor:pointer}
+#azsTreeEditorBar .danger{border-color:#8e3c37;color:#efb4aa}
+body.azs-tree-editing .royal-person{cursor:move!important;user-select:none;touch-action:none}
+body.azs-tree-editing .royal-person.azs-tree-selected{outline:3px solid #e1b85f!important;box-shadow:0 0 28px #e1b85f88!important}
+body.azs-tree-editing .royal-person.azs-connect-first{outline:3px solid #8ec7a5!important}
+#azsDynamicLines{position:absolute;left:0;top:0;width:1800px;height:1000px;pointer-events:none;z-index:2;overflow:visible}
+#azsDynamicLines path{fill:none;stroke:#a8864c;stroke-width:2}
+body.azs-custom-tree #genealogyLines{display:none!important}
+#azsTreeEditorHint{color:#b8aa8d;font:9px/1.35 sans-serif;align-self:center;max-width:270px}
+@media(max-width:700px){#azsTreeEditorBar{left:8px;right:8px;top:8px;max-width:none}#azsTreeEditorBar button,#azsTreeEditorBar select{font-size:8px;padding:6px}}
+</style>
+
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a><a href="#linha-do-tempo">TEMPO</a><a href="#memorial">MEMORIAL</a></div></div></nav>
@@ -2020,6 +2038,209 @@ body.azs-exact-picking .royal-person{cursor:crosshair!important}
 
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);
  else wire();
+})();
+</script>
+
+<button type="button" id="azsTreeEditorEntry">✎ EDITAR ÁRVORE</button>
+
+<script id="azsVisualTreeEditorV15">
+(function(){
+ const LKEY='azsTreeLayoutV1';
+ let layout={},editing=false,selected=null,connectFirst=null,drag=null;
+
+ const people=()=>window.azsPeople||[];
+ const tree=()=>document.getElementById('tree');
+ const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+
+ function persistPeople(){
+   try{localStorage.setItem(window.AZS_STORE_KEY||'azsPeople',JSON.stringify(people()))}catch(e){}
+   document.dispatchEvent(new CustomEvent('azs:people-updated'));
+   if(window.azsCloudSave)window.azsCloudSave(people());
+ }
+ function role(p){
+   if(p.birth&&p.birth!=='Não registrado')return p.birth;
+   return p.branch||'Membro da família';
+ }
+ function ensureCard(p,i){
+   let el=document.getElementById(p.id);
+   if(el&&el.classList.contains('royal-person'))return el;
+   el=document.createElement('div');
+   el.className='royal-person';
+   el.id=p.id; el.dataset.name=p.name; el.dataset.role=role(p);
+   el.innerHTML='<strong>'+esc(p.name)+'</strong><small>'+esc(role(p))+'</small>';
+   const col=i%6,row=Math.floor(i/6);
+   el.style.left=(60+col*240)+'px';el.style.top=(60+row*145)+'px';
+   tree().appendChild(el);
+   return el;
+ }
+ function syncCards(){
+   if(!tree())return;
+   const ids=new Set(people().map(p=>p.id));
+   tree().querySelectorAll('.royal-person').forEach(el=>{
+     if(!ids.has(el.id)&&el.dataset.azsDynamic==='1')el.remove();
+   });
+   people().forEach((p,i)=>{
+     const el=ensureCard(p,i);
+     if(!el.dataset.name)el.dataset.name=p.name;
+     const pos=layout[p.id];
+     if(pos){el.style.left=pos.x+'px';el.style.top=pos.y+'px'}
+   });
+ }
+ function getPos(el){return{x:parseFloat(el.style.left)||el.offsetLeft,y:parseFloat(el.style.top)||el.offsetTop}}
+ function savePositions(){
+   tree().querySelectorAll('.royal-person').forEach(el=>layout[el.id]=getPos(el));
+ }
+ function center(el){return{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight/2}}
+ function line(svg,a,b,kind){
+   const A=center(a),B=center(b),p=document.createElementNS('http://www.w3.org/2000/svg','path');
+   if(kind==='spouse')p.setAttribute('d',`M${A.x} ${A.y} L${B.x} ${B.y}`);
+   else{
+     const mid=(A.y+B.y)/2;
+     p.setAttribute('d',`M${A.x} ${A.y} V${mid} H${B.x} V${B.y}`);
+   }
+   svg.appendChild(p);
+ }
+ function draw(){
+   if(!tree())return;
+   let svg=document.getElementById('azsDynamicLines');
+   if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.id='azsDynamicLines';tree().prepend(svg)}
+   svg.innerHTML='';
+   const byName=new Map(people().map(p=>[p.name,p]));
+   const done=new Set();
+   people().forEach(p=>{
+     const child=document.getElementById(p.id);if(!child)return;
+     [p.father,p.mother].filter(Boolean).forEach(n=>{
+       const par=byName.get(n),pel=par&&document.getElementById(par.id);
+       if(pel)line(svg,pel,child,'parent');
+     });
+     if(p.spouse){
+       const sp=byName.get(p.spouse),sel=sp&&document.getElementById(sp.id);
+       const key=[p.id,sp&&sp.id].sort().join('|');
+       if(sel&&!done.has(key)){done.add(key);line(svg,child,sel,'spouse')}
+     }
+   });
+ }
+ function applyLayout(data){
+   if(!data)return;
+   layout=data.positions||data||{};
+   syncCards();
+   if(Object.keys(layout).length){document.body.classList.add('azs-custom-tree');draw()}
+ }
+ async function load(){
+   try{applyLayout(JSON.parse(localStorage.getItem(LKEY)||'{}'))}catch(e){}
+   try{
+     if(window.firebase&&firebase.firestore){
+       const s=await firebase.firestore().collection('arquivo').doc('arvore-editor').get();
+       if(s.exists){
+         const d=s.data(); if(d.positions){layout=d.positions;localStorage.setItem(LKEY,JSON.stringify(layout));applyLayout(layout)}
+       }
+     }
+   }catch(e){}
+ }
+ async function saveAll(){
+   savePositions();localStorage.setItem(LKEY,JSON.stringify(layout));persistPeople();
+   document.body.classList.add('azs-custom-tree');draw();
+   try{
+     if(window.firebase&&firebase.auth&&firebase.auth().currentUser&&firebase.firestore){
+       await firebase.firestore().collection('arquivo').doc('arvore-editor').set({positions:layout,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+       hint('Árvore salva para toda a família.');
+     }else hint('Árvore salva neste dispositivo.');
+   }catch(e){hint('Posições salvas localmente. Não foi possível salvar na nuvem.')}
+ }
+ function hint(t){const h=document.getElementById('azsTreeEditorHint');if(h)h.textContent=t}
+ function select(el){
+   tree().querySelectorAll('.azs-tree-selected').forEach(x=>x.classList.remove('azs-tree-selected'));
+   selected=el; if(el)el.classList.add('azs-tree-selected');
+ }
+ function addPerson(){
+   const name=prompt('Nome completo da pessoa:');if(!name||!name.trim())return;
+   const id='p_'+Date.now();
+   const p={id,name:name.trim(),birth:'Não registrado',status:'Vivo(a)',place:'',job:'',branch:'',father:'',mother:'',spouse:'',children:'',bio:''};
+   people().push(p);persistPeople();
+   const el=ensureCard(p,people().length-1);el.dataset.azsDynamic='1';
+   layout[id]={x:650,y:760};el.style.left='650px';el.style.top='760px';select(el);draw();
+   hint('Card criado. Arraste para a posição desejada e conecte-o.');
+ }
+ function removeSelected(){
+   if(!selected)return hint('Clique primeiro no card que deseja excluir.');
+   const id=selected.id,p=people().find(x=>x.id===id);if(!p)return;
+   if(!confirm('Excluir '+p.name+' da árvore e do arquivo familiar?'))return;
+   const name=p.name;
+   window.azsPeople=people().filter(x=>x.id!==id).map(x=>({
+     ...x,
+     father:x.father===name?'':x.father,mother:x.mother===name?'':x.mother,
+     spouse:x.spouse===name?'':x.spouse,
+     children:(x.children||'').split(',').map(v=>v.trim()).filter(v=>v&&v!==name).join(', ')
+   }));
+   delete layout[id];selected.remove();selected=null;persistPeople();draw();hint('Card excluído.');
+ }
+ function connect(a,b,type){
+   if(!a||!b||a===b)return;
+   const A=people().find(p=>p.id===a.id),B=people().find(p=>p.id===b.id);if(!A||!B)return;
+   if(type==='father'){B.father=A.name; addChild(A,B.name)}
+   if(type==='mother'){B.mother=A.name; addChild(A,B.name)}
+   if(type==='spouse'){A.spouse=B.name;B.spouse=A.name}
+   persistPeople();draw();hint('Ligação criada e salva nos dados da família.');
+ }
+ function addChild(p,name){
+   const arr=(p.children||'').split(',').map(v=>v.trim()).filter(Boolean);
+   if(!arr.includes(name))arr.push(name);p.children=arr.join(', ');
+ }
+ function build(){
+   const stage=document.getElementById('stage')||document.getElementById('viewport');if(!stage)return setTimeout(build,100);
+   stage.style.position='relative';
+   if(document.getElementById('azsTreeEditorBar'))return;
+   const bar=document.createElement('div');bar.id='azsTreeEditorBar';
+   bar.innerHTML='<button type="button" id="azsTreeAdd">+ ADICIONAR CARD</button>'+
+    '<button type="button" id="azsTreeDelete" class="danger">EXCLUIR CARD</button>'+
+    '<select id="azsTreeRelation"><option value="father">PAI DE</option><option value="mother">MÃE DE</option><option value="spouse">CÔNJUGE DE</option></select>'+
+    '<button type="button" id="azsTreeConnect">CONECTAR</button>'+
+    '<button type="button" id="azsTreeSave">SALVAR ÁRVORE</button>'+
+    '<button type="button" id="azsTreeExit">SAIR DA EDIÇÃO</button>'+
+    '<span id="azsTreeEditorHint">Arraste os cards livremente. Para conectar, escolha o tipo, clique CONECTAR e depois clique em duas pessoas.</span>';
+   stage.appendChild(bar);
+
+   document.getElementById('azsTreeEditorEntry').onclick=()=>{
+     if(!document.body.classList.contains('azs-is-admin'))return;
+     editing=true;document.body.classList.add('azs-tree-editing');syncCards();draw();hint('Modo de edição ativado.');
+     document.getElementById('lineage')?.scrollIntoView({behavior:'smooth'});
+   };
+   document.getElementById('azsTreeAdd').onclick=addPerson;
+   document.getElementById('azsTreeDelete').onclick=removeSelected;
+   document.getElementById('azsTreeSave').onclick=saveAll;
+   document.getElementById('azsTreeExit').onclick=()=>{editing=false;connectFirst=null;document.body.classList.remove('azs-tree-editing');select(null)};
+   document.getElementById('azsTreeConnect').onclick=()=>{connectFirst='WAIT';hint('Agora clique na PRIMEIRA pessoa e depois na SEGUNDA.')};
+ }
+ document.addEventListener('pointerdown',e=>{
+   if(!editing)return;
+   const el=e.target.closest('.royal-person');if(!el)return;
+   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+   if(connectFirst){
+     if(connectFirst==='WAIT'){connectFirst=el;el.classList.add('azs-connect-first');hint('Primeira pessoa selecionada. Clique na segunda.');return}
+     const first=connectFirst;first.classList.remove('azs-connect-first');connectFirst=null;
+     connect(first,el,document.getElementById('azsTreeRelation').value);return;
+   }
+   select(el);
+   const pos=getPos(el);drag={el,pid:e.pointerId,sx:e.clientX,sy:e.clientY,x:pos.x,y:pos.y};
+   el.setPointerCapture?.(e.pointerId);
+ },true);
+ document.addEventListener('pointermove',e=>{
+   if(!drag||e.pointerId!==drag.pid)return;
+   const scaleMatch=(tree().style.transform||'').match(/scale\(([\d.]+)\)/);
+   const scale=scaleMatch?parseFloat(scaleMatch[1]):1;
+   drag.el.style.left=(drag.x+(e.clientX-drag.sx)/scale)+'px';
+   drag.el.style.top=(drag.y+(e.clientY-drag.sy)/scale)+'px';
+   layout[drag.el.id]=getPos(drag.el);draw();
+ },true);
+ document.addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.pid)drag=null},true);
+ document.addEventListener('click',e=>{
+   if(!editing)return;
+   const el=e.target.closest('.royal-person');if(el){e.preventDefault();e.stopPropagation();e.stopImmediatePropagation()}
+ },true);
+ window.addEventListener('resize',()=>setTimeout(draw,50));
+ document.addEventListener('azs:people-updated',()=>{if(!editing){syncCards();draw()}});
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{build();setTimeout(load,500)});
+ else{build();setTimeout(load,500)}
 })();
 </script>
 
