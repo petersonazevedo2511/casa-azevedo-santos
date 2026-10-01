@@ -889,7 +889,7 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
      );
      login.classList.remove("open");
      panel.classList.add("open");
-   }catch(err){ status.textContent="E-mail ou senha incorretos."; }
+   }catch(err){ console.error("Firebase Auth:",err); status.textContent="Falha no login: "+(err.code||"erro desconhecido"); }
  };
 
  auth.onAuthStateChanged(async user=>{
