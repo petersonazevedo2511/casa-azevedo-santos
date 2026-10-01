@@ -128,6 +128,12 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
 .profile-photo img{display:block;width:100%;height:auto}
 </style>
 
+<style id="azsPortraitGalleryFix">
+.portrait-slot.portrait-gallery-photo{height:180px;padding:0;overflow:hidden;position:relative;cursor:pointer;background:#101713}
+.portrait-slot.portrait-gallery-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.portrait-slot.portrait-gallery-photo span{position:absolute;left:0;right:0;bottom:0;margin:0;padding:8px 5px;background:#07100dcc;color:#ead49b;font:10px sans-serif;letter-spacing:.08em}
+@media(max-width:760px){.portrait-slot.portrait-gallery-photo{height:210px}}
+</style>
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a></div></div></nav>
@@ -241,7 +247,8 @@ html{scroll-behavior:smooth}.archive-status{display:grid;grid-template-columns:r
       <div class="archive-icon">❖</div><h3>Galeria de Retratos</h3>
       <p class="archive-note">Espaço preparado para o acervo fotográfico familiar.</p>
       <div class="portrait-grid">
-        <div class="portrait-slot">P<span>Peterson</span></div><div class="portrait-slot">K<span>Ketlin</span></div>
+        <div class="portrait-slot portrait-gallery-photo" data-gallery-person="peterson">P<span>Peterson</span></div>
+        <div class="portrait-slot portrait-gallery-photo" data-gallery-person="ketlin">K<span>Ketlin</span></div>
         <div class="portrait-slot">R<span>Ricardo</span></div><div class="portrait-slot">V<span>Vivian</span></div>
         <div class="portrait-slot">A<span>Ana Laura</span></div><div class="portrait-slot">L<span>Luiza</span></div>
       </div>
@@ -950,6 +957,26 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
    }
  });
  observer.observe(modal,{attributes:true,attributeFilter:['class','data-person-id']});
+})();
+</script>
+<script id="azsPortraitGalleryController">
+(function(){
+ function renderGallery(){
+   document.querySelectorAll('[data-gallery-person]').forEach(function(slot){
+     var id=slot.getAttribute('data-gallery-person');
+     var src=window.azsPortraits&&window.azsPortraits[id];
+     if(!src)return;
+     var label=id==='peterson'?'Peterson':'Ketlin';
+     slot.innerHTML='<img src="'+src+'" alt="Retrato de '+label+'"><span>'+label+'</span>';
+     slot.onclick=function(){
+       var person=document.querySelector('.royal-person[data-id="'+id+'"],.person[data-id="'+id+'"]');
+       if(person) person.click();
+     };
+   });
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',renderGallery);
+ else renderGallery();
+ setTimeout(renderGallery,300);
 })();
 </script>
 </body></html>
