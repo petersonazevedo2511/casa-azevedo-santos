@@ -458,6 +458,29 @@ body.azs-is-admin #azsAdminExitBtn{display:inline-block}
 .azl-side.open .azl-side-inner{opacity:1;visibility:visible;transform:translateX(0) scale(1);pointer-events:auto}
 @media(max-width:560px){.azl-side{left:10px!important;bottom:10px!important}.azl-side-inner{width:min(205px,calc(100vw - 24px))!important;max-height:calc(100vh - 82px);overflow:auto}}
 </style>
+
+<style id="azsMemorialGalleryGreekV16">
+/* Memorial em galeria clássica: corredor horizontal, não uma grade inteira */
+#memorial.azx{overflow:hidden;position:relative;padding-bottom:44px}
+#memorial.azx::before,#memorial.azx::after{content:"";display:block;height:16px;margin:16px auto 4px;max-width:1120px;border-top:1px solid rgba(194,154,72,.58);border-bottom:1px solid rgba(194,154,72,.22);background:repeating-linear-gradient(90deg,transparent 0 42px,rgba(194,154,72,.14) 43px 45px,transparent 46px 88px)}
+#memorial .azx-memorial{display:flex!important;grid-template-columns:none!important;gap:30px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:28px max(8vw,34px) 38px;margin:0 auto;max-width:1180px;box-sizing:border-box;scrollbar-width:none;perspective:1100px}
+#memorial .azx-memorial::-webkit-scrollbar{display:none}
+#memorial .azs-memorial-card{flex:0 0 clamp(270px,29vw,350px);scroll-snap-align:center;position:relative;min-height:470px;padding:20px 20px 24px!important;box-sizing:border-box;background:linear-gradient(145deg,#111914,#09110d)!important;border:1px solid rgba(194,154,72,.72)!important;box-shadow:0 18px 36px rgba(0,0,0,.38),inset 0 0 0 5px #0a110d,inset 0 0 0 6px rgba(194,154,72,.35);transition:transform .28s ease,box-shadow .28s ease,opacity .28s ease;opacity:.72;cursor:pointer}
+#memorial .azs-memorial-card::before{content:"✦";position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:42px;height:27px;display:grid;place-items:center;color:#d8b35d;background:#0b130f;border:1px solid #9f7a32;border-radius:50% 50% 8px 8px;font-size:13px;z-index:2}
+#memorial .azs-memorial-card:hover,#memorial .azs-memorial-card.is-selected{transform:translateY(-9px) scale(1.025);opacity:1;box-shadow:0 25px 55px rgba(0,0,0,.55),0 0 0 1px rgba(218,178,86,.35),inset 0 0 0 5px #0a110d,inset 0 0 0 6px rgba(218,178,86,.55)}
+#memorial .azs-memorial-photo{height:255px!important;width:100%!important;margin:0 0 20px!important;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle at 50% 35%,#19241d,#070c09 72%)!important;border:8px ridge #8f6c2c!important;outline:1px solid #d0aa54;color:#b99043!important;font-family:Georgia,serif;font-size:46px!important;box-sizing:border-box;filter:sepia(.12)}
+#memorial .azs-memorial-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;filter:sepia(.15) contrast(1.03)}
+#memorial .azs-memorial-data{text-align:center!important;display:block!important;color:#e9dfc8!important}
+#memorial .azs-memorial-data b{display:block;font-family:Georgia,serif;color:#f0c86d!important;font-size:20px;line-height:1.15;margin-bottom:12px;font-weight:500}
+#memorial .azs-memorial-data span{display:block!important;font-size:12px;line-height:1.55;color:#d8cfba!important}
+#memorial .azs-memorial-data strong{color:#d3aa52!important;font-weight:600}
+#memorial .azs-memorial-data span:last-child{margin-top:9px;padding-top:9px;border-top:1px solid rgba(194,154,72,.24)}
+.azs-memorial-controls{display:flex;align-items:center;justify-content:center;gap:14px;margin:2px auto 18px}
+.azs-memorial-controls button{width:42px;height:42px;border-radius:50%;border:1px solid #9d7934;background:#0b140f;color:#e7c46e;font:22px Georgia,serif;cursor:pointer;transition:.2s}
+.azs-memorial-controls button:hover{background:#17251c;transform:scale(1.06)}
+.azs-memorial-hint{font:11px Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#9f916f;text-align:center;margin-top:-8px}
+@media(max-width:650px){#memorial .azx-memorial{padding-left:12vw;padding-right:12vw;gap:18px}#memorial .azs-memorial-card{flex-basis:76vw;min-height:445px}#memorial .azs-memorial-photo{height:235px!important}.azs-memorial-hint{font-size:9px}}
+</style>
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a><a href="#linha-do-tempo">TEMPO</a><a href="#memorial">MEMORIAL</a></div></div></nav>
@@ -1762,7 +1785,7 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
    box.innerHTML=dead.map(p=>{
      const portrait=window.azsPortraits&&window.azsPortraits[p.id];
      const initials=(p.name||'?').split(/\s+/).slice(0,2).map(x=>x[0]).join('');
-     return '<article class="azs-memorial-card">'+
+     return '<article class="azs-memorial-card" data-person-id="'+esc(p.id||'')+'" tabindex="0">'+
        '<div class="azs-memorial-photo">'+(portrait?'<img src="'+portrait+'" alt="Retrato de '+esc(p.name)+'">':esc(initials))+'</div>'+
        '<div class="azs-memorial-data"><b>'+esc(p.name)+'</b>'+
        '<span><strong>Nascimento:</strong> '+esc(dateValue(p,'birth'))+'</span>'+
@@ -1770,6 +1793,16 @@ body:not(.azs-is-admin) #saveDocRef{display:none!important}
        '<span><strong>Ramo:</strong> '+esc(p.branch||'Não registrado')+'</span>'+
        '<span><strong>Legado:</strong> '+esc(p.bio||p.legacy||'Memória preservada pela família.')+'</span></div></article>';
    }).join('')||'<div class="empty-note">Nenhum antepassado falecido cadastrado.</div>';
+   if(dead.length){
+     let controls=document.getElementById('azsMemorialControls');
+     if(!controls){controls=document.createElement('div');controls.id='azsMemorialControls';controls.className='azs-memorial-controls';controls.innerHTML='<button type="button" data-dir="-1" aria-label="Quadro anterior">‹</button><span class="azs-memorial-hint">Passe o mouse ou deslize pela galeria</span><button type="button" data-dir="1" aria-label="Próximo quadro">›</button>';box.after(controls);}
+     const cards=[...box.querySelectorAll('.azs-memorial-card')];
+     const select=c=>{cards.forEach(x=>x.classList.toggle('is-selected',x===c));};
+     cards.forEach(c=>{c.addEventListener('mouseenter',()=>select(c));c.addEventListener('focus',()=>select(c));});
+     if(cards[0])select(cards[0]);
+     controls.onclick=e=>{const b=e.target.closest('button[data-dir]');if(!b)return;const current=cards.findIndex(c=>c.classList.contains('is-selected'));const next=Math.max(0,Math.min(cards.length-1,current+Number(b.dataset.dir)));select(cards[next]);cards[next].scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});};
+     box.onwheel=e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){e.preventDefault();box.scrollLeft+=e.deltaY;const mid=box.scrollLeft+box.clientWidth/2;let best=cards[0],dist=Infinity;cards.forEach(c=>{const d=Math.abs(c.offsetLeft+c.offsetWidth/2-mid);if(d<dist){dist=d;best=c}});if(best)select(best);}}, {passive:false};
+   }
  }
  function run(){setupBook();setTimeout(memorial,350)}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run);else run();
