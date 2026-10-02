@@ -507,6 +507,102 @@ body.azs-is-admin #azsAdminExitBtn{display:inline-block}
 #memorial .azs-memorial-hint{color:#817965!important}
 @media(max-width:650px){#memorial .azx-memorial{gap:28px;padding:38px calc(50% - 39vw) 28px!important}#memorial .azs-memorial-card{flex-basis:78vw!important}#memorial .azs-memorial-photo{height:440px!important;padding:11px!important;border-width:8px!important}#memorial .azs-memorial-photo:after{inset:11px}#memorial .azs-memorial-data{width:94%}}
 </style>
+
+<style id="azsMemorialMuseumLayoutFixV3">
+/* Correção estrutural do Memorial: cada pessoa é um quadro completo de museu. */
+#memorial .azx-memorial{
+  display:flex!important;
+  align-items:center!important;
+  gap:56px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scroll-snap-type:x mandatory!important;
+  padding:48px calc(50% - 190px) 34px!important;
+  box-sizing:border-box!important;
+}
+#memorial .azs-memorial-card{
+  display:block!important;
+  grid-template-columns:none!important;
+  gap:0!important;
+  flex:0 0 380px!important;
+  width:380px!important;
+  max-width:380px!important;
+  min-width:380px!important;
+  min-height:0!important;
+  padding:0!important;
+  margin:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  scroll-snap-align:center!important;
+  opacity:.38!important;
+  transform:scale(.84)!important;
+  transform-origin:center center!important;
+  filter:brightness(.68) saturate(.7)!important;
+}
+#memorial .azs-memorial-card:hover,
+#memorial .azs-memorial-card.is-selected{
+  opacity:1!important;
+  transform:scale(1)!important;
+  filter:none!important;
+}
+#memorial .azs-memorial-photo{
+  display:grid!important;
+  place-items:center!important;
+  width:100%!important;
+  height:500px!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:13px!important;
+  overflow:hidden!important;
+  border:11px ridge #8a6425!important;
+  outline:2px solid #d3a84d!important;
+  background:radial-gradient(circle at 50% 38%,#1a241c 0,#080c09 72%)!important;
+  box-shadow:0 24px 48px rgba(0,0,0,.72),inset 0 0 0 3px #2b1a08!important;
+  color:#a9813c!important;
+  font:52px Georgia,serif!important;
+}
+#memorial .azs-memorial-photo img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  object-fit:cover!important;
+  object-position:center top!important;
+}
+#memorial .azs-memorial-data{
+  display:block!important;
+  width:92%!important;
+  margin:13px auto 0!important;
+  padding:8px 12px 9px!important;
+  box-sizing:border-box!important;
+  text-align:center!important;
+  background:#0c0e0b!important;
+  border:1px solid rgba(185,145,60,.48)!important;
+}
+#memorial .azs-memorial-data b{
+  display:block!important;
+  margin:0 0 5px!important;
+  font:500 16px/1.2 Georgia,serif!important;
+  color:#d9bf7b!important;
+}
+#memorial .azs-memorial-data span{
+  display:inline!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  font:10px/1.45 Georgia,serif!important;
+  color:#aaa18d!important;
+}
+#memorial .azs-memorial-data span+span::before{content:" · ";color:#75623b!important}
+#memorial .azs-memorial-data strong{font-weight:400!important;color:#c5ad70!important}
+@media(max-width:650px){
+  #memorial .azx-memorial{gap:26px!important;padding:38px 11vw 28px!important;scroll-padding-inline:11vw!important}
+  #memorial .azs-memorial-card{flex-basis:78vw!important;width:78vw!important;min-width:78vw!important;max-width:78vw!important}
+  #memorial .azs-memorial-photo{height:62vh!important;min-height:390px!important;max-height:500px!important;border-width:8px!important;padding:10px!important}
+}
+</style>
+
 </head>
 <body>
 <nav><div class="wrap nav"><div class="brand">✦ CASA AZEVEDO MELO</div><div class="links"><a href="#arquivo">ARQUIVO</a><a href="#linhagem">LINHAGEM</a><a href="#cronicas">CRÔNICAS</a><a href="#heraldica">HERÁLDICA</a><a href="#linha-do-tempo">TEMPO</a><a href="#memorial">MEMORIAL</a></div></div></nav>
